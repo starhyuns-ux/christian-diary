@@ -45,15 +45,15 @@ export default function HomePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Hero */}
-      <div className="text-center mb-10 animate-fade-in">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-brand-500/30 text-brand-300 text-sm font-medium mb-4">
-          <span className="w-2 h-2 rounded-full bg-brand-400 inline-block animate-pulse" />
+      <div className="text-center mb-14 animate-fade-in pt-8 pb-4">
+        <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-brand/5 border border-brand/10 text-brand text-xs font-bold mb-6 tracking-wide uppercase">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand inline-block animate-pulse" />
           신앙 공동체 커뮤니티 캘린더
         </div>
-        <h1 className="font-cinzel text-4xl sm:text-5xl font-bold text-white mb-3 text-glow">
+        <h1 className="font-modern text-4xl sm:text-6xl font-extrabold text-slate-900 mb-5 tracking-tight">
           크리스천다이어리
         </h1>
-        <p className="text-slate-400 text-lg max-w-xl mx-auto">
+        <p className="text-slate-600 text-lg sm:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
           강의, 소모임, 기도회, 예배…{' '}
           <br className="sm:hidden" />
           모든 신앙 일정을 한 곳에서 나누세요
@@ -71,13 +71,13 @@ export default function HomePage() {
               <button
                 key={cat}
                 onClick={() => toggleCategory(cat)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 border ${
                   active
-                    ? config.className + ' scale-105 shadow-lg'
-                    : 'glass border-white/10 text-slate-400 hover:text-slate-200 hover:bg-white/5'
+                    ? config.className + ' scale-105 shadow-md -translate-y-0.5'
+                    : 'bg-white border-black/5 text-slate-500 hover:border-brand/20 hover:text-brand shadow-sm'
                 }`}
               >
-                <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: config.dotColor }} />
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: config.dotColor }} />
                 {config.label}
               </button>
             )
@@ -87,30 +87,30 @@ export default function HomePage() {
         {/* Region + View Toggle */}
         <div className="flex items-center gap-2">
           <div className="relative">
-            <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500" />
+            <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
             <select
               value={selectedRegion}
               onChange={e => setSelectedRegion(e.target.value)}
-              className="pl-7 pr-3 py-2 rounded-lg glass border border-white/10 text-sm text-slate-300 bg-transparent appearance-none cursor-pointer hover:border-brand-500/50 transition-colors focus:outline-none focus:border-brand-500"
+              className="pl-8 pr-8 py-2.5 rounded-xl bg-white border border-black/5 text-sm font-bold text-slate-700 appearance-none cursor-pointer hover:border-brand/30 transition-all focus:outline-none shadow-sm"
             >
               {REGIONS.map(r => (
-                <option key={r} value={r} className="bg-slate-900">{r}</option>
+                <option key={r} value={r} className="bg-white text-slate-900">{r}</option>
               ))}
             </select>
           </div>
-          <div className="flex glass rounded-lg border border-white/10 overflow-hidden">
+          <div className="flex bg-white rounded-xl border border-black/5 p-1 shadow-sm">
             <button
               onClick={() => setViewMode('calendar')}
-              className={`px-3 py-2 text-xs font-medium transition-colors ${
-                viewMode === 'calendar' ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-white'
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'calendar' ? 'bg-brand text-white shadow-md' : 'text-slate-400 hover:text-slate-700'
               }`}
             >
               캘린더
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`px-3 py-2 text-xs font-medium transition-colors ${
-                viewMode === 'list' ? 'bg-brand-600 text-white' : 'text-slate-400 hover:text-white'
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'list' ? 'bg-brand text-white shadow-md' : 'text-slate-400 hover:text-slate-700'
               }`}
             >
               목록
@@ -138,20 +138,20 @@ export default function HomePage() {
       )}
 
       {/* Event Cards */}
-      <section className="mt-4">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-brand-400" />
+      <section className="mt-8">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2.5 font-modern">
+            <Calendar className="w-6 h-6 text-brand" />
             {viewMode === 'list' ? '전체 이벤트' : '다가오는 일정'}
             {!loading && (
-              <span className="text-sm font-normal text-slate-500 ml-1">
-                ({events.length}개)
+              <span className="text-sm font-bold text-slate-400 ml-1">
+                {events.length}
               </span>
             )}
           </h2>
           <Link
             href="/events"
-            className="text-sm text-brand-400 hover:text-brand-300 transition-colors"
+            className="text-sm font-bold text-brand hover:underline underline-offset-4"
           >
             전체보기 →
           </Link>

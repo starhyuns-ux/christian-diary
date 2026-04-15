@@ -46,9 +46,8 @@ export default function SearchPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-      {/* Search Header */}
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-white mb-6">모임 검색</h1>
+      <div className="mb-12">
+        <h1 className="text-3xl font-extrabold text-slate-900 mb-8 font-modern tracking-tight">모임 검색</h1>
         
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1 group">
@@ -58,7 +57,7 @@ export default function SearchPage() {
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               placeholder="이벤트 제목, 교회명, 내용 검색..."
-              className="w-full pl-12 pr-4 py-4 rounded-2xl glass-strong border border-white/10 text-white placeholder-slate-600 focus:outline-none focus:border-brand-500/50 focus:ring-4 focus:ring-brand-500/10 transition-all"
+              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-black/5 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand/30 focus:ring-4 focus:ring-brand/5 transition-all shadow-sm font-medium"
             />
             {searchTerm && (
               <button 
@@ -79,7 +78,7 @@ export default function SearchPage() {
                 className="w-full pl-10 pr-8 py-4 rounded-2xl glass border border-white/10 text-sm text-slate-300 bg-transparent appearance-none cursor-pointer focus:outline-none focus:border-brand-500/50"
               >
                 {REGIONS.map(r => (
-                  <option key={r} value={r} className="bg-slate-900">{r}</option>
+                  <option key={r} value={r} className="bg-white text-slate-900">{r}</option>
                 ))}
               </select>
             </div>
@@ -88,15 +87,15 @@ export default function SearchPage() {
       </div>
 
       {/* Categories Tabs */}
-      <div className="flex flex-wrap gap-2 mb-8 border-b border-white/5 pb-4">
+      <div className="flex flex-wrap gap-2 mb-10 border-b border-black/5 pb-5">
         {['all', 'lecture', 'small_group', 'prayer'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
-            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
               activeTab === tab
-                ? 'bg-brand-600/20 text-brand-300 border border-brand-500/30'
-                : 'text-slate-500 hover:text-slate-300'
+                ? 'bg-brand text-white shadow-md'
+                : 'text-slate-500 hover:text-brand hover:bg-brand/5'
             }`}
           >
             {tab === 'all' ? '전체' : CATEGORY_CONFIG[tab as any].label}
@@ -119,9 +118,9 @@ export default function SearchPage() {
           </div>
         ) : (
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-sm text-slate-500">
-                총 <span className="text-white font-bold">{events.length}</span>개의 모임을 찾았습니다
+            <div className="flex items-center justify-between mb-8">
+              <p className="text-sm text-slate-500 font-medium">
+                총 <span className="text-brand font-extrabold">{events.length}</span>개의 모임을 찾았습니다
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -136,9 +135,9 @@ export default function SearchPage() {
       {/* Quick Links / Suggestions */}
       {events.length === 0 && !loading && (
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-6 rounded-2xl glass border border-white/5 hover:border-brand-500/20 transition-all cursor-pointer group" onClick={() => setActiveTab('lecture')}>
-            <h3 className="text-white font-bold mb-2 flex items-center justify-between">
-              성경 강해/세미나 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <div className="p-6 rounded-2xl bg-white border border-black/5 hover:border-brand/20 hover:shadow-xl transition-all cursor-pointer group" onClick={() => setActiveTab('lecture')}>
+            <h3 className="text-slate-900 font-bold mb-2 flex items-center justify-between font-modern">
+              성경 강해/세미나 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-brand" />
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">준비된 신앙 강의를 통해 믿음의 지경을 넓혀보세요.</p>
           </div>

@@ -223,3 +223,61 @@ export async function fetchMyHostedEvents(userId: string): Promise<Event[]> {
 
   return (data ?? []) as Event[]
 }
+
+/**
+ * 후원금 확인증 제출
+ */
+export async function submitDonationProof(eventId: string, proofUrl: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('events')
+    .update({
+      donation_status: 'submitted',
+      donation_proof_url: proofUrl,
+    })
+    .eq('id', eventId)
+
+  if (error) {
+    console.error('[submitDonationProof] error:', error)
+    return false
+  }
+  return true
+}
+
+/**
+ * 관리자: 후원금 확인 완료
+ */
+export async function verifyDonation(eventId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('events')
+    .update({
+      donation_status: 'verified',
+    })
+    .eq('id', eventId)
+
+  if (error) {
+    console.error('[verifyDonation] error:', error)
+    return false
+  }
+  return true
+}
+
+/**
+ * 관리자: 후원이 필요한(확인증 제출된) 모든 이벤트 목록
+ */
+export async function fetchDonationPendingEvents(): Promise<Event[]> {
+  const { data, error } = await supabase
+    .from('events_with_count')
+    .select(`
+      *,
+      host:users(id, name, avatar_url, church_name)
+    `)
+    .eq('donation_status', 'submitted')
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    console.error('[fetchDonationPendingEvents] error:', error)
+    return []
+  }
+
+  return (data ?? []) as Event[]
+}

@@ -25,35 +25,35 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4">
-      <div className="glass-strong rounded-3xl border border-white/10 p-8 sm:p-12 w-full max-w-md animate-slide-up">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 animate-fade-in">
+      <div className="bg-white rounded-3xl border border-black/5 p-8 sm:p-12 w-full max-w-md shadow-2xl animate-slide-up">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center mx-auto mb-4 shadow-2xl glow-brand">
-            <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-white" stroke="currentColor" strokeWidth="2.5">
+        <div className="text-center mb-10">
+          <div className="w-20 h-20 rounded-3xl bg-brand flex items-center justify-center mx-auto mb-6 shadow-xl">
+            <svg viewBox="0 0 24 24" fill="none" className="w-10 h-10 text-white" stroke="currentColor" strokeWidth="2.5">
               <path d="M12 2v20M2 12h20" strokeLinecap="round" />
             </svg>
           </div>
-          <h1 className="font-cinzel text-2xl font-bold text-white text-glow mb-1">
+          <h1 className="font-modern text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
             크리스천다이어리
           </h1>
-          <p className="text-slate-500 text-sm">신앙 공동체 커뮤니티 캘린더</p>
+          <p className="text-slate-500 font-bold text-sm uppercase tracking-widest">Community Calendar</p>
         </div>
 
         {/* Error message */}
         {error && (
-          <div className="mb-6 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm text-center">
+          <div className="mb-8 px-4 py-3 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-bold text-center">
             로그인에 실패했습니다. 다시 시도해주세요.
           </div>
         )}
 
         {/* Login buttons */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           <button
             id="google-login-btn"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="flex items-center justify-center gap-3 w-full py-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-medium text-sm transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-sm transition-all hover:bg-slate-50 hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? (
               <svg className="w-5 h-5 animate-spin text-slate-400" viewBox="0 0 24 24" fill="none">
@@ -73,14 +73,20 @@ export default function LoginPage() {
         </div>
 
         {/* Notice */}
-        <p className="text-center text-xs text-slate-600 mt-6 leading-relaxed">
-          로그인 시 크리스천다이어리의{' '}
-          <span className="text-slate-500">이용약관</span>과{' '}
-          <span className="text-slate-500">개인정보처리방침</span>에 동의하게 됩니다.
-        </p>
-        <p className="text-center text-xs text-slate-700 mt-2">
-          이단 교단 및 비기독교 단체의 가입은 제한될 수 있습니다.
-        </p>
+        <div className="mt-10 space-y-4">
+          <p className="text-center text-[10px] text-slate-400 leading-relaxed font-medium">
+            로그인 시 크리스천다이어리의{' '}
+            <span className="text-slate-600 font-bold">이용약관</span>과{' '}
+            <span className="text-slate-600 font-bold">개인정보처리방침</span>에 동의하게 됩니다.
+          </p>
+          <div className="pt-4 border-t border-slate-50">
+            <p className="text-center text-[10px] text-slate-500 font-bold">
+              ⚠️ 이단 교단 및 비기독교 단체의 가입은 제한됩니다.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
       </div>
     </div>
   )

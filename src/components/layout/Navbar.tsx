@@ -70,7 +70,7 @@ export default function Navbar() {
                   <path d="M12 2v20M2 12h20" strokeLinecap="round" />
                 </svg>
               </div>
-              <span className="font-cinzel text-lg font-semibold text-white text-glow hidden sm:block">
+              <span className="font-modern text-lg font-bold text-slate-900 hidden sm:block">
                 크리스천다이어리
               </span>
             </Link>
@@ -83,10 +83,10 @@ export default function Navbar() {
                   <Link
                     key={href}
                     href={href}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                       active
-                        ? 'bg-brand-600/70 text-white glow-brand'
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-brand text-white shadow-md'
+                        : 'text-slate-600 hover:text-brand hover:bg-brand/5'
                     }`}
                   >
                     {label}
@@ -138,13 +138,13 @@ export default function Navbar() {
 
                     {dropdownOpen && (
                       <div className="absolute right-0 top-11 w-52 glass-strong rounded-xl border border-white/10 py-2 shadow-2xl animate-slide-up">
-                        <div className="px-4 py-2 border-b border-white/10 mb-1">
-                          <p className="text-white text-sm font-medium truncate">{displayName}</p>
+                        <div className="px-4 py-2 border-b border-black/5 mb-1">
+                          <p className="text-slate-900 text-sm font-bold truncate">{displayName}</p>
                           <p className="text-slate-500 text-xs truncate">{authUser.email}</p>
                         </div>
                         <Link
                           href="/profile"
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:text-brand hover:bg-brand/5 transition-colors"
                           onClick={() => setDropdownOpen(false)}
                         >
                           <User className="w-4 h-4" />
@@ -175,7 +175,7 @@ export default function Navbar() {
                 <Link
                   href="/login"
                   id="login-btn"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg glass border border-white/10 text-slate-300 text-sm font-medium hover:text-white hover:border-brand-500/40 transition-all duration-200"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg glass border border-black/5 text-slate-700 text-sm font-bold hover:text-brand hover:border-brand/40 transition-all duration-200"
                 >
                   <LogIn className="w-4 h-4" />
                   로그인

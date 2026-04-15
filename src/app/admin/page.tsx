@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { fetchPendingEvents, approveEvent, rejectEvent } from '@/lib/events'
+import { fetchPendingEvents, approveEvent, rejectEvent, fetchDonationPendingEvents, verifyDonation } from '@/lib/events'
 import { Event, CATEGORY_CONFIG } from '@/types'
-import { ShieldCheck, Check, X, Clock, ChevronDown, ChevronUp, Loader2, MapPin, Calendar, Wallet, Building } from 'lucide-react'
+import { ShieldCheck, Check, X, Clock, Loader2, Wallet, Building, Eye, CheckCircle2, RefreshCw } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import CategoryBadge from '@/components/ui/CategoryBadge'
@@ -16,8 +16,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [events, setEvents] = useState<Event[]>([])
-  const [expanded, setExpanded] = useState<string | null>(null)
-  const [rejectNote, setRejectNote] = useState('')
+  const [donationEvents, setDonationEvents] = useState<Event[]>([])
+  const [activeTab, setActiveTab] = useState<'events' | 'donations'>('events')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   useEffect(() => {
@@ -32,17 +32,25 @@ export default function AdminPage() {
     if (!profile?.is_admin) { router.replace('/'); return }
 
     setIsAdmin(true)
-    loadPending()
+    loadData()
   }
 
-  const loadPending = async () => {
+  const loadData = async () => {
     setLoading(true)
-    const data = await fetchPendingEvents()
-    setEvents(data)
-    setLoading(false)
+    try {
+      const [pending, donations] = await Promise.all([
+        fetchPendingEvents(),
+        fetchDonationPendingEvents()
+      ])
+      setEvents(pending)
+      setDonationEvents(donations)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleApprove = async (eventId: string) => {
+    if (!confirm('이 이벤트를 승인하시겠습니까?')) return
     setActionLoading(eventId + '_approve')
     const ok = await approveEvent(eventId)
     setActionLoading(null)
@@ -54,170 +62,170 @@ export default function AdminPage() {
     }
   }
 
-  const handleReject = async (eventId: string) => {
-    if (!rejectNote.trim()) { toast.error('거절 사유를 입력해주세요'); return }
-    setActionLoading(eventId + '_reject')
-    const ok = await rejectEvent(eventId, rejectNote)
+  const handleVerifyDonation = async (eventId: string) => {
+    if (!confirm('후원금 납부가 확인되었습니까?')) return
+    setActionLoading(eventId + '_verify')
+    const ok = await verifyDonation(eventId)
     setActionLoading(null)
     if (ok) {
-      toast.success('이벤트가 거절되었습니다')
-      setEvents(prev => prev.filter(e => e.id !== eventId))
-      setRejectNote('')
-      setExpanded(null)
+      toast.success('후원금 확인이 완료되었습니다 🎉')
+      setDonationEvents(prev => prev.filter(e => e.id !== eventId))
     } else {
-      toast.error('거절 처리 중 오류가 발생했습니다')
+      toast.error('처리 중 오류가 발생했습니다')
     }
   }
 
   if (!isAdmin) return null
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-500/30 to-gold-600/20 border border-gold-500/30 flex items-center justify-center">
-          <ShieldCheck className="w-5 h-5 text-gold-400" />
+      <div className="flex items-center gap-4 mb-10">
+        <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center shadow-sm border border-brand/5">
+          <ShieldCheck className="w-6 h-6 text-brand" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">관리자 대시보드</h1>
-          <p className="text-slate-500 text-sm">이벤트 승인 검토</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 font-modern tracking-tight">관리자 대시보드</h1>
+          <p className="text-slate-500 font-bold text-sm uppercase tracking-widest">Administrator Workspace</p>
         </div>
-        <button onClick={loadPending} className="ml-auto px-4 py-2 rounded-lg glass border border-white/10 text-slate-400 text-sm hover:text-white transition-colors">
-          새로고침
+        <button 
+          onClick={loadData} 
+          className="ml-auto p-3 rounded-2xl bg-white border border-black/5 text-slate-400 hover:text-brand hover:border-brand/20 transition-all shadow-sm"
+          title="새로고침"
+        >
+          <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="glass rounded-2xl p-4 border border-white/10 text-center">
-          <p className="text-3xl font-bold text-gold-400">{events.length}</p>
-          <p className="text-slate-500 text-sm mt-1">대기 중</p>
-        </div>
-        <div className="glass rounded-2xl p-4 border border-white/10 text-center">
-          <p className="text-3xl font-bold text-emerald-400">–</p>
-          <p className="text-slate-500 text-sm mt-1">오늘 승인</p>
-        </div>
-        <div className="glass rounded-2xl p-4 border border-white/10 text-center">
-          <p className="text-3xl font-bold text-red-400">–</p>
-          <p className="text-slate-500 text-sm mt-1">오늘 거절</p>
-        </div>
+      {/* Tabs */}
+      <div className="flex bg-white p-1.5 rounded-2xl border border-black/5 shadow-sm mb-10 w-fit">
+        <button
+          onClick={() => setActiveTab('events')}
+          className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${
+            activeTab === 'events' ? 'bg-brand text-white shadow-lg' : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          이벤트 승인 ({events.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('donations')}
+          className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${
+            activeTab === 'donations' ? 'bg-amber-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          후원금 검토 ({donationEvents.length})
+        </button>
       </div>
 
-      {/* Pending events */}
+      {/* Content */}
       {loading ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-28 skeleton rounded-2xl" />
+            <div key={i} className="h-32 skeleton rounded-3xl" />
           ))}
         </div>
-      ) : events.length === 0 ? (
-        <div className="text-center py-20 glass rounded-2xl border border-white/10">
-          <p className="text-4xl mb-3">✅</p>
-          <p className="text-white font-medium">대기 중인 이벤트가 없습니다</p>
-          <p className="text-slate-500 text-sm mt-1">모든 이벤트가 처리되었습니다</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {events.map(event => {
-            const isExpanded = expanded === event.id
-            const start = parseISO(event.start_at)
-            return (
-              <div key={event.id} className="glass rounded-2xl border border-white/10 overflow-hidden transition-all duration-300">
-                {/* Event header */}
-                <div className="p-5">
-                  <div className="flex items-start justify-between gap-4">
+      ) : activeTab === 'events' ? (
+        events.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-3xl border border-black/5 shadow-sm">
+            <p className="text-5xl mb-4">✨</p>
+            <p className="text-slate-900 font-bold text-lg">대기 중인 이벤트가 없습니다</p>
+            <p className="text-slate-500 text-sm mt-1">모든 검토가 완료되었습니다</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {events.map(event => {
+              const start = parseISO(event.start_at)
+              return (
+                <div key={event.id} className="bg-white rounded-3xl border border-black/5 p-6 shadow-md hover:shadow-xl transition-all duration-300">
+                  <div className="flex items-start justify-between gap-6">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <div className="flex items-center gap-3 mb-3 flex-wrap">
                         <CategoryBadge category={event.category} />
-                        <span className="flex items-center gap-1 text-xs text-slate-500">
-                          <Clock className="w-3 h-3" />
+                        <span className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                          <Clock className="w-3.5 h-3.5" />
                           {format(parseISO(event.created_at), 'M월 d일 HH:mm 등록', { locale: ko })}
                         </span>
                       </div>
-                      <h3 className="text-white font-semibold text-base leading-snug line-clamp-1">{event.title}</h3>
-                      <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                        <span className="flex items-center gap-1 text-xs text-slate-400">
-                          <Building className="w-3 h-3" />
-                          {event.church_name} {event.denomination && `· ${event.denomination}`}
-                        </span>
-                        <span className="flex items-center gap-1 text-xs text-slate-400">
-                          <Calendar className="w-3 h-3" />
-                          {format(start, 'M/d(E) HH:mm', { locale: ko })}
-                        </span>
-                        <span className="flex items-center gap-1 text-xs text-slate-400">
-                          <MapPin className="w-3 h-3" />
-                          {event.region}
-                        </span>
-                        {event.fee > 0 && (
-                          <span className="flex items-center gap-1 text-xs text-gold-400">
-                            <Wallet className="w-3 h-3" />
-                            {event.fee.toLocaleString()}원
-                          </span>
-                        )}
+                      <h3 className="text-slate-900 font-bold text-lg leading-snug mb-2 font-modern">{event.title}</h3>
+                      <div className="flex items-center gap-4 flex-wrap text-slate-500 text-xs font-bold font-modern">
+                         <span className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5 text-brand" /> {event.church_name}</span>
+                         <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-brand" /> {format(start, 'M/d(E) HH:mm', { locale: ko })}</span>
                       </div>
                     </div>
-
-                    {/* Action buttons */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        onClick={() => handleApprove(event.id)}
-                        disabled={!!actionLoading}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-sm font-medium hover:bg-emerald-500/30 transition-all disabled:opacity-50"
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => handleApprove(event.id)} 
+                        disabled={!!actionLoading} 
+                        className="px-6 py-3 rounded-2xl bg-emerald-500 text-white text-sm font-extrabold flex items-center gap-2 hover:bg-emerald-600 hover:shadow-lg transition-all active:scale-95 disabled:opacity-50"
                       >
-                        {actionLoading === event.id + '_approve'
-                          ? <Loader2 className="w-4 h-4 animate-spin" />
-                          : <Check className="w-4 h-4" />
-                        }
+                        {actionLoading === event.id + '_approve' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                         승인
                       </button>
-                      <button
-                        onClick={() => setExpanded(isExpanded ? null : event.id)}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-red-500/20 border border-red-500/30 text-red-400 text-sm font-medium hover:bg-red-500/30 transition-all"
-                      >
-                        <X className="w-4 h-4" />
-                        거절
-                        {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                      </button>
                     </div>
                   </div>
-
-                  {/* Description preview */}
-                  {event.description && (
-                    <p className="text-slate-500 text-xs mt-3 line-clamp-2">{event.description}</p>
+                </div>
+              )
+            })}
+          </div>
+        )
+      ) : (
+        /* ── DONATION TAB CONTENT ── */
+        donationEvents.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-3xl border border-black/5 shadow-sm">
+            <p className="text-5xl mb-4">💎</p>
+            <p className="text-slate-900 font-bold text-lg">검토할 후원 확인증이 없습니다</p>
+            <p className="text-slate-500 text-sm mt-1">평화로운 관리자 대시보드입니다</p>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {donationEvents.map(event => (
+              <div key={event.id} className="bg-white rounded-3xl border border-black/5 overflow-hidden p-6 flex flex-col md:flex-row gap-8 shadow-md hover:shadow-xl transition-all duration-300">
+                <div className="w-full md:w-56 aspect-[1/1] rounded-2xl overflow-hidden bg-slate-100 border border-black/5 group relative shadow-inner shrink-0">
+                  {event.donation_proof_url ? (
+                    <>
+                      <img src={event.donation_proof_url} alt="Proof" className="w-full h-full object-cover" />
+                      <a href={event.donation_proof_url} target="_blank" rel="noreferrer" className="absolute inset-0 bg-brand/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                        <Eye className="w-8 h-8 text-white" />
+                      </a>
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-300 font-bold text-xs uppercase tracking-widest">No Image</div>
                   )}
                 </div>
-
-                {/* Reject panel */}
-                {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-white/5 pt-4 bg-red-500/5 animate-slide-up">
-                    <label className="block text-sm text-red-300 font-medium mb-2">거절 사유 *</label>
-                    <textarea
-                      value={rejectNote}
-                      onChange={e => setRejectNote(e.target.value)}
-                      placeholder="거절 이유를 입력하세요 (주최자에게 전달됩니다)"
-                      rows={2}
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-red-500/20 text-white placeholder-slate-600 text-sm focus:outline-none focus:border-red-500/40 resize-none"
-                    />
-                    <div className="flex justify-end gap-2 mt-3">
-                      <button onClick={() => { setExpanded(null); setRejectNote('') }}
-                        className="px-4 py-2 rounded-lg glass border border-white/10 text-slate-400 text-sm hover:text-white transition-colors">
-                        취소
-                      </button>
-                      <button
-                        onClick={() => handleReject(event.id)}
-                        disabled={!!actionLoading}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600/70 border border-red-500/30 text-white text-sm font-medium hover:bg-red-600 transition-all disabled:opacity-50"
-                      >
-                        {actionLoading === event.id + '_reject' && <Loader2 className="w-4 h-4 animate-spin" />}
-                        거절 확정
-                      </button>
+                
+                <div className="flex-1 min-w-0 flex flex-col justify-between pt-1">
+                  <div>
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-slate-900 text-xl font-extrabold font-modern leading-tight pr-4">{event.title}</h3>
+                      <span className="shrink-0 bg-amber-100 text-amber-800 text-[11px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-tighter">
+                        {(event.fee * 0.1).toLocaleString()}원 납부
+                      </span>
+                    </div>
+                    <div className="space-y-2 mt-2">
+                       <p className="text-sm text-slate-600 flex items-center gap-2 font-bold font-modern">
+                         <Building className="w-4 h-4 text-brand" /> {event.church_name}
+                       </p>
+                       <p className="text-sm text-slate-500 flex items-center gap-2 font-medium">
+                         <Wallet className="w-4 h-4 text-amber-500" /> 총 수익: {event.fee.toLocaleString()}원 (플랫폼 후원 10%)
+                       </p>
                     </div>
                   </div>
-                )}
+                  
+                  <div className="mt-8 flex justify-end">
+                    <button 
+                      onClick={() => handleVerifyDonation(event.id)}
+                      disabled={!!actionLoading}
+                      className="w-full md:w-auto px-8 py-3.5 rounded-2xl bg-brand text-white text-sm font-extrabold flex items-center justify-center gap-2 hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      {actionLoading === event.id + '_verify' ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                      후원금 확인 완료
+                    </button>
+                  </div>
+                </div>
               </div>
-            )
-          })}
-        </div>
+            ))}
+          </div>
+        )
       )}
     </div>
   )

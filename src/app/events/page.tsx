@@ -31,33 +31,33 @@ export default function EventsListPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
         <div>
-          <div className="flex items-center gap-2 text-brand-400 text-sm font-medium mb-2">
-            <Link href="/" className="hover:text-brand-300">홈</Link>
-            <ChevronRight className="w-3 h-3 text-slate-600" />
+          <div className="flex items-center gap-2 text-brand text-xs font-bold mb-3 uppercase tracking-wider">
+            <Link href="/" className="hover:underline underline-offset-4">홈</Link>
+            <ChevronRight className="w-3 h-3 text-slate-300" />
             <span>전체 이벤트</span>
           </div>
-          <h1 className="text-3xl font-bold text-white">모든 일정 보기</h1>
-          <p className="text-slate-500 mt-2">전국의 다양한 기독교 모임을 카테고리별로 확인하세요.</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 font-modern tracking-tight">모든 일정 보기</h1>
+          <p className="text-slate-600 mt-2 font-medium">전국의 다양한 기독교 모임을 카테고리별로 확인하세요.</p>
         </div>
 
         <div className="flex items-center gap-3">
           <Link 
             href="/search"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass border border-white/10 text-slate-300 text-sm hover:text-white transition-all"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white border border-black/5 text-slate-700 text-sm font-bold hover:text-brand hover:border-brand/30 transition-all shadow-sm"
           >
             <SearchIcon className="w-4 h-4" />
             검색하기
           </Link>
-          <div className="flex glass rounded-xl border border-white/10 overflow-hidden">
+          <div className="flex bg-white rounded-xl border border-black/5 p-1 shadow-sm">
             <button 
               onClick={() => setViewMode('grid')}
-              className={`p-2.5 transition-colors ${viewMode === 'grid' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-brand text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}
             >
               <Grid className="w-4 h-4" />
             </button>
             <button 
               onClick={() => setViewMode('list')}
-              className={`p-2.5 transition-colors ${viewMode === 'list' ? 'bg-brand-600 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-brand text-white shadow-md' : 'text-slate-400 hover:text-slate-600'}`}
             >
               <ListIcon className="w-4 h-4" />
             </button>
@@ -69,10 +69,10 @@ export default function EventsListPage() {
       <div className="flex flex-wrap gap-2 mb-8">
         <button
           onClick={() => setActiveCategory('all')}
-          className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+          className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
             activeCategory === 'all'
-              ? 'bg-white text-slate-900 shadow-xl scale-105'
-              : 'glass border border-white/5 text-slate-500 hover:text-slate-300'
+              ? 'bg-brand text-white shadow-md scale-105'
+              : 'bg-white border border-black/5 text-slate-500 hover:text-brand hover:border-brand/20'
           }`}
         >
           전체
@@ -84,10 +84,10 @@ export default function EventsListPage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 active
-                  ? cfg.className + ' shadow-lg scale-105'
-                  : 'glass border border-white/5 text-slate-500 hover:text-slate-300'
+                  ? cfg.className + ' shadow-md scale-105'
+                  : 'bg-white border border-black/5 text-slate-500 hover:text-brand hover:border-brand/20'
               }`}
             >
               <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cfg.dotColor }} />
