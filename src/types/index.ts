@@ -61,6 +61,9 @@ export interface Event {
   denomination: string | null
   church_name: string | null
   image_url: string | null
+  /** 후원 관리 */
+  donation_status: DonationStatus
+  donation_proof_url: string | null
   /** 관리자 검토 메모 */
   admin_note: string | null
   reviewed_at: string | null

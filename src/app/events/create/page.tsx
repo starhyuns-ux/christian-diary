@@ -1,11 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { supabase, uploadImage } from '@/lib/supabase'
 import { createEvent } from '@/lib/events'
 import { EventCategory, LocationType, CATEGORY_CONFIG, LOCATION_TYPE_CONFIG, REGIONS, PLATFORM_FEE_RATE } from '@/types'
-import { CalendarDays, MapPin, Users, Wallet, ChevronRight, Info, Loader2 } from 'lucide-react'
+import { CalendarDays, MapPin, Users, Wallet, ChevronRight, Info, Loader2, Image as ImageIcon, Upload, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import CategoryBadge from '@/components/ui/CategoryBadge'
 
@@ -27,6 +25,9 @@ export default function CreateEventPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [step, setStep] = useState(1) // 1: 기본정보, 2: 장소/일정, 3: 모임비/기타
+  
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   const [form, setForm] = useState({
     title: '',
@@ -56,6 +57,26 @@ export default function CreateEventPage() {
   const feeAmount = parseInt(form.fee) || 0
   const platformFeeAmount = Math.round(feeAmount * platformFee)
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        return toast.error('파일 크기는 5MB 이하여야 합니다')
+      }
+      setImageFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setImageFile(null)
+    setImagePreview(null)
+  }
+
   const handleSubmit = async () => {
     // 유효성 검사
     if (!form.title.trim()) return toast.error('제목을 입력해주세요')
@@ -71,6 +92,18 @@ export default function CreateEventPage() {
     }
 
     setLoading(true)
+    
+    // 1. 이미지 업로드 (있는 경우)
+    let imageUrl = null
+    if (imageFile) {
+      imageUrl = await uploadImage(imageFile)
+      if (!imageUrl) {
+        setLoading(false)
+        return toast.error('이미지 업로드에 실패했습니다')
+      }
+    }
+
+    // 2. 이벤트 정보 저장
     const result = await createEvent({
       host_id: user.id,
       title: form.title,
@@ -90,7 +123,7 @@ export default function CreateEventPage() {
       region: form.region,
       denomination: form.denomination,
       church_name: form.church_name,
-      image_url: null,
+      image_url: imageUrl,
     })
     setLoading(false)
 
@@ -139,6 +172,35 @@ export default function CreateEventPage() {
         {/* ── STEP 1: 기본 정보 ── */}
         {step === 1 && (
           <>
+            {/* 이미지 업로드 */}
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">커버 이미지</label>
+              <div className="relative group">
+                {imagePreview ? (
+                  <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10">
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      onClick={removeImage}
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center aspect-video rounded-xl border-2 border-dashed border-white/10 hover:border-brand-500/50 hover:bg-brand-500/5 transition-all cursor-pointer group">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <div className="p-3 rounded-full bg-white/5 group-hover:bg-brand-500/10 mb-3 transition-colors">
+                        <Upload className="w-6 h-6 text-slate-500 group-hover:text-brand-400" />
+                      </div>
+                      <p className="text-sm text-slate-400 font-medium">클릭하거나 파일을 드래그하세요</p>
+                      <p className="text-xs text-slate-600 mt-1">PNG, JPG, WEBP (최대 5MB)</p>
+                    </div>
+                    <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
+                  </label>
+                )}
+              </div>
+            </div>
+
             {/* 카테고리 */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">카테고리 *</label>

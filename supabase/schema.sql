@@ -27,6 +27,10 @@ do $$ begin
   create type participant_status as enum ('pending', 'confirmed', 'cancelled');
 exception when duplicate_object then null; end $$;
 
+do $$ begin
+  create type donation_status as enum ('not_required', 'pending', 'submitted', 'verified');
+exception when duplicate_object then null; end $$;
+
 -- ============================================================
 -- users 테이블 (Supabase Auth와 연동)
 -- ============================================================
@@ -99,6 +103,9 @@ create table if not exists public.events (
   denomination       text,
   church_name        text,
   image_url          text,
+  -- 후원금 상태 및 확인증
+  donation_status    donation_status not null default 'not_required',
+  donation_proof_url text,
   -- 관리자 검토 메모 및 타임스탬프
   admin_note         text,
   reviewed_at        timestamptz,
@@ -156,8 +163,15 @@ returns trigger language plpgsql as $$
 begin
   if new.category = 'lecture' then
     new.platform_fee_rate = 0.10;
+    -- 강의이면서 유료인 경우에만 후원 필요 상태로 설정
+    if new.fee > 0 then
+      new.donation_status = 'pending';
+    else
+      new.donation_status = 'not_required';
+    end if;
   else
     new.platform_fee_rate = 0;
+    new.donation_status = 'not_required';
   end if;
   return new;
 end;

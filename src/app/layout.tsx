@@ -17,12 +17,17 @@ const cinzel = Cinzel({
 })
 
 export const metadata: Metadata = {
-  title: '크리스천다이어리 — 신앙 커뮤니티 캘린더',
-  description: '크리스천들의 강의, 소모임, 기도회 등 신앙 공동체 일정을 함께 공유하고 참여하세요.',
-  keywords: '크리스천, 기독교, 교회, 소모임, 기도회, 강의, 커뮤니티, 캘린더',
+  title: '크리스천다이어리 — 신앙 공동체 커뮤니티 캘린더',
+  description: '전국 기독교 강의, 소모임, 기도회 일정을 한눈에 확인하고 함께 나누세요. 이단을 제외한 모든 정통 교단이 함께합니다.',
+  manifest: '/manifest.json',
+  themeColor: '#0f172a',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0',
   openGraph: {
     title: '크리스천다이어리',
-    description: '신앙 공동체 커뮤니티 캘린더',
+    description: '모든 신앙 일정을 한 곳에서 나누세요.',
+    url: 'https://christian-diary.vercel.app',
+    siteName: '크리스천다이어리',
+    locale: 'ko_KR',
     type: 'website',
   },
 }

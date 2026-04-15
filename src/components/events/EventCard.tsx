@@ -18,15 +18,28 @@ export default function EventCard({ event }: Props) {
 
   return (
     <Link href={`/events/${event.id}`} className="block group">
-      <div className="glass rounded-2xl border border-white/8 p-5 hover:border-brand-500/30 hover:bg-white/5 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl group-hover:glow-brand h-full flex flex-col">
-        {/* Category + Location */}
-        <div className="flex items-center justify-between mb-3">
-          <CategoryBadge category={event.category} />
-          <span className="text-xs text-slate-500 flex items-center gap-1">
-            <span>{locConfig.icon}</span>
-            {locConfig.label}
-          </span>
-        </div>
+      <div className="glass rounded-2xl border border-white/8 p-0 hover:border-brand-500/30 hover:bg-white/5 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl group-hover:glow-brand h-full flex flex-col overflow-hidden">
+        {/* Thumbnail Image */}
+        {event.image_url && (
+          <div className="relative aspect-video w-full overflow-hidden border-b border-white/5">
+            <img 
+              src={event.image_url} 
+              alt={event.title} 
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
+          </div>
+        )}
+
+        <div className="p-5 flex flex-col flex-1">
+          {/* Category + Location */}
+          <div className="flex items-center justify-between mb-3">
+            <CategoryBadge category={event.category} />
+            <span className="text-xs text-slate-500 flex items-center gap-1">
+              <span>{locConfig.icon}</span>
+              {locConfig.label}
+            </span>
+          </div>
 
         {/* Title */}
         <h3 className="text-white font-semibold text-sm leading-snug mb-2 line-clamp-2 flex-1 group-hover:text-brand-200 transition-colors">
