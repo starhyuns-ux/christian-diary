@@ -116,6 +116,7 @@ export default function EventCard({ event }: Props) {
               </span>
             )}
           </div>
+        </div>
       </div>
     </Link>
   )
