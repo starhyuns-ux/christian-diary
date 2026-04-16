@@ -91,7 +91,7 @@ export default function SearchPage() {
         {['all', 'lecture', 'small_group', 'prayer'].map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab as any)}
+            onClick={() => setActiveTab(tab as 'all' | EventCategory)}
             className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
               activeTab === tab
                 ? 'bg-brand text-white shadow-md'
