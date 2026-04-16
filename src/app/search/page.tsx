@@ -17,7 +17,7 @@ export default function SearchPage() {
   const [events, setEvents] = useState<Event[]>([])
   const [searchTerm, setSearchTerm] = useState(queryParam)
   const [selectedRegion, setSelectedRegion] = useState('전국')
-  const [activeTab, setActiveTab] = useState<'all' | 'lecture' | 'small_group' | 'prayer'>('all')
+  const [activeTab, setActiveTab] = useState<EventCategory | 'all'>('all')
 
   const performSearch = useCallback(async () => {
     setLoading(true)
