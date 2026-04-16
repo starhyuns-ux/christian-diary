@@ -21,7 +21,7 @@ export default function SearchPage() {
 
   const performSearch = useCallback(async () => {
     setLoading(true)
-    const categoryFilter = activeTab === 'all' ? undefined : [activeTab as any]
+    const categoryFilter = activeTab === 'all' ? undefined : [activeTab as EventCategory]
     const data = await fetchApprovedEvents({
       category: categoryFilter,
       region: selectedRegion,
@@ -98,7 +98,7 @@ export default function SearchPage() {
                 : 'text-slate-500 hover:text-brand hover:bg-brand/5'
             }`}
           >
-            {tab === 'all' ? '전체' : CATEGORY_CONFIG[tab as any].label}
+            {tab === 'all' ? '전체' : CATEGORY_CONFIG[tab as EventCategory].label}
           </button>
         ))}
       </div>
