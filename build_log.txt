@@ -1,0 +1,48 @@
+
+> christian-diary@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.29
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: Unable to snapshot resolve dependencies
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: Unable to snapshot resolve dependencies
+Failed to compile.
+
+HookWebpackError: EPERM: operation not permitted, stat '/Users/stroy/package.json'
+    at makeWebpackError (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/webpack/bundle5.js:28:312635)
+    at /Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/webpack/bundle5.js:28:106060
+    at eval (eval at create (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/webpack/bundle5.js:13:28858), <anonymous>:44:1)
+-- inner error --
+Error: EPERM: operation not permitted, stat '/Users/stroy/package.json'
+    at Object.statSync (node:fs:1740:25)
+    at isFile (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:21091)
+    at /Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:25957
+    at eachParent (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:21274)
+    at Object.findConfig (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:25764)
+    at Function.loadConfig (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:24405)
+    at prepareQueries (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:5846)
+    at browserslist (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:6112)
+    at cleanBrowsersList (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/cssnano-simple/index.js:1:2559)
+    at setBrowserScope (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/cssnano-simple/index.js:1:498)
+caused by plugins in Compilation.hooks.processAssets
+Error: EPERM: operation not permitted, stat '/Users/stroy/package.json'
+    at Object.statSync (node:fs:1740:25)
+    at isFile (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:21091)
+    at /Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:25957
+    at eachParent (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:21274)
+    at Object.findConfig (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:25764)
+    at Function.loadConfig (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:24405)
+    at prepareQueries (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:5846)
+    at browserslist (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/browserslist/index.js:1:6112)
+    at cleanBrowsersList (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/cssnano-simple/index.js:1:2559)
+    at setBrowserScope (/Users/stroy/Desktop/데브모음/크리스천다이어리/christian-diary/node_modules/next/dist/compiled/cssnano-simple/index.js:1:498)
+
+
+> Build failed because of webpack errors
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 11.12.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+npm notice To update run: npm install -g npm@11.12.1
+npm notice

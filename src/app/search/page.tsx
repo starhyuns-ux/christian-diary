@@ -75,7 +75,7 @@ export default function SearchPage() {
               <select
                 value={selectedRegion}
                 onChange={e => setSelectedRegion(e.target.value)}
-                className="w-full pl-10 pr-8 py-4 rounded-2xl glass border border-white/10 text-sm text-slate-300 bg-transparent appearance-none cursor-pointer focus:outline-none focus:border-brand-500/50"
+                className="w-full pl-10 pr-8 py-4 rounded-2xl bg-white border border-black/5 text-sm text-slate-700 appearance-none cursor-pointer focus:outline-none focus:border-brand/30 shadow-sm"
               >
                 {REGIONS.map(r => (
                   <option key={r} value={r} className="bg-white text-slate-900">{r}</option>
@@ -111,10 +111,10 @@ export default function SearchPage() {
             <p className="text-sm">모임을 불러오는 중...</p>
           </div>
         ) : events.length === 0 ? (
-          <div className="text-center py-24 glass rounded-3xl border border-white/5">
+          <div className="text-center py-24 bg-white rounded-3xl border border-black/5 shadow-sm">
             <p className="text-5xl mb-4">🌫️</p>
-            <p className="text-slate-400 font-medium">검색 결과가 없습니다</p>
-            <p className="text-slate-600 text-sm mt-1">다른 검색어를 입력하거나 필터를 조정해 보세요</p>
+            <p className="text-slate-900 font-bold text-lg">검색 결과가 없습니다</p>
+            <p className="text-slate-500 text-sm mt-1 font-medium">다른 검색어를 입력하거나 필터를 조정해 보세요</p>
           </div>
         ) : (
           <div>
@@ -141,17 +141,17 @@ export default function SearchPage() {
             </h3>
             <p className="text-xs text-slate-500 leading-relaxed">준비된 신앙 강의를 통해 믿음의 지경을 넓혀보세요.</p>
           </div>
-          <div className="p-6 rounded-2xl glass border border-white/5 hover:border-brand-500/20 transition-all cursor-pointer group" onClick={() => setActiveTab('small_group')}>
-            <h3 className="text-white font-bold mb-2 flex items-center justify-between">
-              교제 & 소모임 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <div className="p-6 rounded-2xl bg-white border border-black/5 hover:border-brand/20 hover:shadow-xl transition-all cursor-pointer group" onClick={() => setActiveTab('small_group')}>
+            <h3 className="text-slate-900 font-bold mb-2 flex items-center justify-between font-modern">
+              교제 & 소모임 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-brand" />
             </h3>
-            <p className="text-xs text-slate-500 leading-relaxed">가까운 지역의 청년부, 직장인 신앙 공동체를 찾아보세요.</p>
+            <p className="text-xs text-slate-500 leading-relaxed font-medium">가까운 지역의 청년부, 직장인 신앙 공동체를 찾아보세요.</p>
           </div>
-          <div className="p-6 rounded-2xl glass border border-white/5 hover:border-brand-500/20 transition-all cursor-pointer group" onClick={() => setActiveTab('prayer')}>
-            <h3 className="text-white font-bold mb-2 flex items-center justify-between">
-              기도회 & 찬양 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <div className="p-6 rounded-2xl bg-white border border-black/5 hover:border-brand/20 hover:shadow-xl transition-all cursor-pointer group" onClick={() => setActiveTab('prayer')}>
+            <h3 className="text-slate-900 font-bold mb-2 flex items-center justify-between font-modern">
+              기도회 & 찬양 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-brand" />
             </h3>
-            <p className="text-xs text-slate-500 leading-relaxed">함께 모여 뜨겁게 기도하고 찬양하는 자리에 초대합니다.</p>
+            <p className="text-xs text-slate-500 leading-relaxed font-medium">함께 모여 뜨겁게 기도하고 찬양하는 자리에 초대합니다.</p>
           </div>
         </div>
       )}

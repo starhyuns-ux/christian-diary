@@ -8,8 +8,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-noto)', 'sans-serif'],
-        cinzel: ['var(--font-cinzel)', 'serif'],
+        sans: ['var(--font-pretendard)', 'Inter', 'sans-serif'],
+        modern: ['Outfit', 'Inter', 'sans-serif'],
+        outfit: ['Outfit', 'sans-serif'],
+        pretendard: ['var(--font-pretendard)', 'sans-serif'],
       },
       colors: {
         brand: {

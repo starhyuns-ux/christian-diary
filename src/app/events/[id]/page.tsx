@@ -102,9 +102,9 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
   if (!event) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <p className="text-4xl mb-4">🔍</p>
-        <h2 className="text-white text-xl font-bold mb-2">이벤트를 찾을 수 없습니다</h2>
-        <Link href="/" className="text-brand-400 hover:underline">홈으로 돌아가기</Link>
+        <p className="text-5xl mb-4">🔍</p>
+        <h2 className="text-slate-900 text-xl font-extrabold mb-2 font-modern">이벤트를 찾을 수 없습니다</h2>
+        <Link href="/" className="text-brand font-bold hover:underline underline-offset-4 tracking-tight">홈으로 돌아가기</Link>
       </div>
     )
   }
