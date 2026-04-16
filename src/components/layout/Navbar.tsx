@@ -94,14 +94,14 @@ export default function Navbar() {
                 )
               })}
               {profile?.is_admin && (
-                <Link
-                  href="/admin"
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 ${
-                    pathname.startsWith('/admin')
-                      ? 'bg-gold-500/20 text-gold-400'
-                      : 'text-slate-500 hover:text-gold-400 hover:bg-gold-500/10'
-                  }`}
-                >
+                  <Link
+                    href="/admin"
+                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 flex items-center gap-1.5 ${
+                      pathname.startsWith('/admin')
+                        ? 'bg-amber-100 text-amber-700 shadow-sm'
+                        : 'text-slate-600 hover:text-amber-600 hover:bg-amber-50'
+                    }`}
+                  >
                   <ShieldCheck className="w-3.5 h-3.5" />
                   관리자
                 </Link>
@@ -144,7 +144,7 @@ export default function Navbar() {
                         </div>
                         <Link
                           href="/profile"
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 hover:text-brand hover:bg-brand/5 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-brand hover:bg-brand/5 transition-colors"
                           onClick={() => setDropdownOpen(false)}
                         >
                           <User className="w-4 h-4" />
@@ -153,7 +153,7 @@ export default function Navbar() {
                         {profile?.is_admin && (
                           <Link
                             href="/admin"
-                            className="flex items-center gap-2 px-4 py-2 text-sm text-gold-400 hover:text-gold-300 hover:bg-gold-500/10 transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-amber-600 hover:text-amber-700 hover:bg-amber-50 transition-colors"
                             onClick={() => setDropdownOpen(false)}
                           >
                             <ShieldCheck className="w-4 h-4" />
@@ -162,7 +162,7 @@ export default function Navbar() {
                         )}
                         <button
                           onClick={handleSignOut}
-                          className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+                          className="w-full flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors text-left"
                         >
                           <LogOut className="w-4 h-4" />
                           로그아웃
@@ -183,10 +183,10 @@ export default function Navbar() {
               )}
 
               <button
-                className="md:hidden w-9 h-9 rounded-lg glass flex items-center justify-center"
+                className="md:hidden w-9 h-9 rounded-lg bg-white border border-black/5 flex items-center justify-center shadow-sm"
                 onClick={() => setMobileOpen(!mobileOpen)}
               >
-                {mobileOpen ? <X className="w-5 h-5 text-slate-300" /> : <Menu className="w-5 h-5 text-slate-300" />}
+                {mobileOpen ? <X className="w-5 h-5 text-slate-600" /> : <Menu className="w-5 h-5 text-slate-600" />}
               </button>
             </div>
           </div>
@@ -202,8 +202,8 @@ export default function Navbar() {
                   <Link
                     key={href}
                     href={href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      active ? 'bg-brand-600/70 text-white' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 ${
+                      active ? 'bg-brand text-white shadow-lg' : 'text-slate-600 hover:text-brand hover:bg-brand/5'
                     }`}
                     onClick={() => setMobileOpen(false)}
                   >
@@ -225,7 +225,7 @@ export default function Navbar() {
                   </Link>
                   <Link
                     href="/profile"
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-600 hover:text-brand hover:bg-brand/5"
                     onClick={() => setMobileOpen(false)}
                   >
                     <User className="w-4 h-4" />
@@ -233,7 +233,7 @@ export default function Navbar() {
                   </Link>
                   <button
                     onClick={handleSignOut}
-                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50"
                   >
                     <LogOut className="w-4 h-4" />
                     로그아웃
@@ -242,7 +242,7 @@ export default function Navbar() {
               ) : (
                 <Link
                   href="/login"
-                  className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-brand-400 mt-2 border border-brand-500/30 glass"
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-brand border border-brand/20 bg-brand/5"
                   onClick={() => setMobileOpen(false)}
                 >
                   <LogIn className="w-4 h-4" />

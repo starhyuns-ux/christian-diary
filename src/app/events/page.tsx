@@ -105,10 +105,10 @@ export default function EventsListPage() {
           ))}
         </div>
       ) : events.length === 0 ? (
-        <div className="text-center py-24 glass rounded-3xl border border-white/5">
+        <div className="text-center py-24 bg-white rounded-3xl border border-black/5 shadow-sm">
           <p className="text-4xl mb-4">🙌</p>
-          <p className="text-slate-400">등록된 이벤트가 없습니다.</p>
-          <p className="text-slate-600 text-sm mt-1">카테고리를 변경하거나 새로운 모임을 등록해 보세요!</p>
+          <p className="text-slate-900 font-bold text-lg">등록된 이벤트가 없습니다</p>
+          <p className="text-slate-500 text-sm mt-1 font-medium">카테고리를 변경하거나 새로운 모임을 등록해 보세요!</p>
         </div>
       ) : (
         <div className={viewMode === 'grid' 
