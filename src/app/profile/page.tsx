@@ -102,7 +102,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 animate-fade-in">
       {/* Profile Header */}
-      <div className="bg-white rounded-3xl p-8 sm:p-12 border border-black/5 mb-10 relative overflow-hidden shadow-2xl">
+      <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200 mb-10 relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 w-80 h-80 bg-brand/5 blur-[120px] -z-10 rounded-full" />
         
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
@@ -133,7 +133,7 @@ export default function ProfilePage() {
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-x-8 gap-y-2 text-slate-500 text-sm font-medium">
               <span className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-brand" /> {user.email}
+                <Mail className="w-4 h-4 text-brand" /> {user?.email}
               </span>
               {profile?.church_name && (
                 <span className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export default function ProfilePage() {
             className={`w-full flex items-center justify-between px-6 py-4.5 rounded-2xl transition-all shadow-sm border ${
               activeTab === 'joined'
                 ? 'bg-brand text-white border-brand shadow-lg scale-[1.02]'
-                : 'bg-white border-black/5 text-slate-500 hover:text-brand hover:bg-brand/5'
+                : 'bg-white border-slate-200 text-slate-500 hover:text-brand hover:bg-brand/5'
             }`}
           >
             <div className="flex items-center gap-4">
@@ -167,7 +167,7 @@ export default function ProfilePage() {
             className={`w-full flex items-center justify-between px-6 py-4.5 rounded-2xl transition-all shadow-sm border ${
               activeTab === 'hosted'
                 ? 'bg-brand text-white border-brand shadow-lg scale-[1.02]'
-                : 'bg-white border-black/5 text-slate-500 hover:text-brand hover:bg-brand/5'
+                : 'bg-white border-slate-200 text-slate-500 hover:text-brand hover:bg-brand/5'
             }`}
           >
             <div className="flex items-center gap-4">
@@ -196,7 +196,7 @@ export default function ProfilePage() {
           </div>
 
           {(activeTab === 'joined' ? joinedEvents : hostedEvents).length === 0 ? (
-            <div className="text-center py-24 bg-white rounded-3xl border border-black/5 shadow-sm">
+            <div className="text-center py-24 bg-white rounded-3xl border border-slate-200 shadow-sm">
               <p className="text-5xl mb-6">🕊️</p>
               <p className="text-slate-900 font-bold text-lg">내역이 없습니다</p>
               <p className="text-slate-500 text-sm mt-1">활동을 시작해 보세요!</p>
@@ -229,7 +229,7 @@ export default function ProfilePage() {
                   </div>
 
                   {activeTab === 'hosted' && event.category === 'lecture' && event.fee > 0 && event.status === 'approved' && (
-                    <div className="bg-white rounded-2xl p-5 border border-black/5 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-sm">
+                    <div className="bg-white rounded-2xl p-5 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-sm">
                       <div className="flex items-center gap-4">
                         <div className={`p-3 rounded-2xl ${
                           event.donation_status === 'verified' ? 'bg-emerald-50' : 'bg-amber-50'

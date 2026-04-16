@@ -31,9 +31,9 @@ export interface User {
   name: string
   avatar_url: string | null
   church_name: string | null
-  region: string | null
-  is_admin: boolean
-  created_at: string
+  region?: string | null
+  is_admin?: boolean
+  created_at?: string
 }
 
 export interface Event {

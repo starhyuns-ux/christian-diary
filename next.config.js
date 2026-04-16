@@ -3,6 +3,7 @@ const nextConfig = {
   images: {
     domains: ['lh3.googleusercontent.com', 'k.kakaocdn.net'],
   },
+  optimizeFonts: false,
   webpack: (config, { isServer }) => {
     // Exclude parent node_modules from watcher to avoid permission errors
     config.watchOptions = {

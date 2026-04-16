@@ -9,15 +9,17 @@ import interactionPlugin from '@fullcalendar/interaction'
 import { EventSourceInput } from '@fullcalendar/core'
 import { useRouter } from 'next/navigation'
 import { Event, CATEGORY_CONFIG } from '@/types'
+import { HOLIDAYS_2026 } from '@/lib/holidays'
 
 interface Props {
   events: Event[]
+  onDateClick?: (date: string) => void
 }
 
-export default function CalendarView({ events }: Props) {
+export default function CalendarView({ events, onDateClick }: Props) {
   const router = useRouter()
 
-  const calendarEvents: EventSourceInput = events.map(event => ({
+  const userEvents = events.map(event => ({
     id: event.id,
     title: event.title,
     start: event.start_at,
@@ -28,6 +30,17 @@ export default function CalendarView({ events }: Props) {
     extendedProps: { category: event.category },
   }))
 
+  const holidayEvents = HOLIDAYS_2026.map(holiday => ({
+    title: holiday.title,
+    start: holiday.start,
+    end: holiday.end,
+    allDay: true,
+    className: 'fc-event-holiday',
+    interactive: false, // 공휴일은 클릭 불가
+  }))
+
+  const calendarEvents: EventSourceInput = [...userEvents, ...holidayEvents]
+
   return (
     <FullCalendar
       plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
@@ -36,7 +49,7 @@ export default function CalendarView({ events }: Props) {
       headerToolbar={{
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,listWeek',
+        right: 'dayGridMonth,listWeek', // Hide timeGridWeek on mobile/tablet to prevent overflow
       }}
       buttonText={{
         today: '오늘',
@@ -48,9 +61,14 @@ export default function CalendarView({ events }: Props) {
       eventClick={info => {
         router.push(`/events/${info.event.id}`)
       }}
+      dateClick={info => {
+        if (onDateClick) {
+          onDateClick(info.dateStr)
+        }
+      }}
       height="auto"
-      aspectRatio={1.5}
-      dayMaxEvents={3}
+      aspectRatio={window.innerWidth < 640 ? 0.8 : 1.5}
+      dayMaxEvents={window.innerWidth < 640 ? 2 : 3}
       moreLinkText="개 더보기"
       nowIndicator
       eventDisplay="block"

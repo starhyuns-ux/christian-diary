@@ -15,6 +15,7 @@ module.exports = {
       },
       colors: {
         brand: {
+          DEFAULT: '#4f46e5',
           50:  '#eef2ff',
           100: '#e0e7ff',
           200: '#c7d2fe',
@@ -28,6 +29,7 @@ module.exports = {
           950: '#1e1b4b',
         },
         gold: {
+          DEFAULT: '#d97706',
           300: '#fcd34d',
           400: '#fbbf24',
           500: '#f59e0b',

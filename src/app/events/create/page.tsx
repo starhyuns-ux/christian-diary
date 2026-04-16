@@ -107,7 +107,7 @@ export default function CreateEventPage() {
 
     // 2. 이벤트 정보 저장
     const result = await createEvent({
-      host_id: user.id,
+      host_id: user?.id,
       title: form.title,
       description: form.description,
       category: form.category,
@@ -405,7 +405,7 @@ export default function CreateEventPage() {
                 <input type="text" value={form.fee_description}
                   onChange={e => update('fee_description', e.target.value)}
                   placeholder="예: 현장 납부 혹은 계좌이체"
-                  className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-black/5 text-slate-900 placeholder-slate-400 text-sm font-bold focus:outline-none focus:border-brand/30 focus:bg-white transition-all shadow-sm font-modern"
+                  className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 text-sm font-bold focus:outline-none focus:border-brand/30 focus:bg-white transition-all shadow-sm font-modern"
                 />
               </div>
             )}
@@ -427,7 +427,7 @@ export default function CreateEventPage() {
         <button
           onClick={() => setStep(s => Math.max(1, s - 1))}
           disabled={step === 1}
-          className="px-8 py-4 rounded-2xl bg-white border border-black/5 text-slate-400 text-sm font-extrabold hover:text-slate-900 hover:border-slate-200 disabled:opacity-0 disabled:pointer-events-none transition-all shadow-sm"
+          className="px-8 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-600 text-sm font-extrabold hover:text-slate-900 hover:border-slate-300 hover:bg-white disabled:opacity-0 disabled:pointer-events-none transition-all shadow-sm"
         >
           이전으로
         </button>

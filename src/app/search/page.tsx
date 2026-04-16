@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { fetchApprovedEvents } from '@/lib/events'
 import { Event, EventCategory, CATEGORY_CONFIG, REGIONS } from '@/types'
@@ -8,7 +8,7 @@ import { Search, MapPin, Calendar, Filter, X, Loader2, ArrowRight } from 'lucide
 import EventCard from '@/components/events/EventCard'
 import CategoryBadge from '@/components/ui/CategoryBadge'
 
-export default function SearchPage() {
+function SearchContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const queryParam = searchParams.get('q') || ''
@@ -57,7 +57,7 @@ export default function SearchPage() {
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               placeholder="이벤트 제목, 교회명, 내용 검색..."
-              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-black/5 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand/30 focus:ring-4 focus:ring-brand/5 transition-all shadow-sm font-medium"
+              className="w-full pl-12 pr-4 py-3.5 sm:py-4 rounded-2xl bg-slate-50/50 border border-slate-200 text-sm sm:text-base text-slate-900 placeholder-slate-400 focus:outline-none focus:border-brand/30 focus:ring-4 focus:ring-brand/5 focus:bg-white transition-all shadow-sm font-medium"
             />
             {searchTerm && (
               <button 
@@ -75,7 +75,7 @@ export default function SearchPage() {
               <select
                 value={selectedRegion}
                 onChange={e => setSelectedRegion(e.target.value)}
-                className="w-full pl-10 pr-8 py-4 rounded-2xl bg-white border border-black/5 text-sm text-slate-700 appearance-none cursor-pointer focus:outline-none focus:border-brand/30 shadow-sm"
+                className="w-full pl-10 pr-8 py-3.5 sm:py-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 appearance-none cursor-pointer focus:outline-none focus:border-brand/30 focus:bg-white shadow-sm font-bold"
               >
                 {REGIONS.map(r => (
                   <option key={r} value={r} className="bg-white text-slate-900">{r}</option>
@@ -86,8 +86,7 @@ export default function SearchPage() {
         </div>
       </div>
 
-      {/* Categories Tabs */}
-      <div className="flex flex-wrap gap-2 mb-10 border-b border-black/5 pb-5">
+      <div className="flex overflow-x-auto no-scrollbar gap-2 mb-10 border-b border-black/5 pb-5 -mx-4 px-4 sm:mx-0 sm:px-0">
         {(['all', 'lecture', 'small_group', 'prayer'] as const).map((tab) => (
           <button
             key={tab}
@@ -98,7 +97,7 @@ export default function SearchPage() {
                 : 'text-slate-500 hover:text-brand hover:bg-brand/5'
             }`}
           >
-            {tab === 'all' ? '전체' : CATEGORY_CONFIG[tab as EventCategory].label}
+            {tab === 'all' ? '전체' : CATEGORY_CONFIG[tab as unknown as EventCategory]?.label || '기타'}
           </button>
         ))}
       </div>
@@ -156,5 +155,18 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center py-40 text-slate-500 gap-4">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
+        <p className="text-sm font-medium">페이지 시스템 구성 중...</p>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   )
 }

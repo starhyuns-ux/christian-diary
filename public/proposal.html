@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경영인 정기보험 활용 절세 및 퇴직금 재원 마련 제안서</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a2a6c;
+            --secondary-color: #b21f1f;
+            --accent-color: #fdbb2d;
+            --text-main: #333;
+            --text-light: #666;
+            --bg-light: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; border: none; box-shadow: none; }
+            .no-print { display: none; }
+        }
+
+        /* Header Decor */
+        .header-decor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+        }
+
+        .title-section {
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 60px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 30px;
+        }
+
+        .title-section h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-light);
+            font-weight: 300;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .content-box {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .highlight-text {
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        .tip-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff9db;
+            border-left: 4px solid var(--accent-color);
+            font-size: 14px;
+        }
+
+        .tip-box strong {
+            color: #856404;
+        }
+
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-light);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary-color), #2c3e50);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        /* Charts / Visuals Emulator */
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .step:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .exec-summary {
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .finance-note {
+            font-size: 14px;
+            color: #2c3e50;
+            background: #e7f5ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="no-print" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <button onclick="window.print()" style="padding: 12px 24px; background: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">PDF로 저장 / 인쇄</button>
+    </div>
+
+    <div class="page">
+        <div class="header-decor"></div>
+        
+        <div class="title-section">
+            <h3 style="margin: 0; color: var(--accent-color); font-weight: 500;">Strategic Corporate Solutions</h3>
+            <h1>경영권 안정 및 임원 보상 체계 수립 제안서</h1>
+            <p class="subtitle">경영인 정기보험을 통한 법인 절세 및 은퇴 재원 마련 전략</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">1. 제안 개요 및 목적</div>
+            <div class="exec-summary">
+                본 제안서는 법인의 <span class="highlight-text">가용 자본 효율화</span>와 <span class="highlight-text">대표이사의 합법적 은퇴 자산 확보</span>를 동시에 달성하기 위한 전략적 솔루션을 담고 있습니다. 
+                단순한 보험 가입을 넘어, 법인세 절감액을 자산화하여 임원의 퇴직시점에 가장 낮은 세율로 자산을 이전하는 것이 핵심입니다.
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">2. 핵심 구조 및 프로세스</div>
+            <div class="process-flow">
+                <div class="step">정관/규정 정비</div>
+                <div class="step">보험료 납입(비용화)</div>
+                <div class="step">환급금 누적(자산화)</div>
+                <div class="step">퇴직금 지급(절세)</div>
+            </div>
+            <div class="content-box">
+                <p><strong>구조적 차별점:</strong></p>
+                <ul>
+                    <li><strong>계약자/수익자:</strong> 법인 (납입 주체 및 자산 귀속의 주체)</li>
+                    <li><strong>피보험자:</strong> 대표이사 (보장 및 은퇴 시점의 기준)</li>
+                    <li><strong>회계 처리:</strong> 해지환급금 범위 내 '선급비용' 처리 / 초과분 '보장성 보험료' 비용 처리</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">3. 도입 필요성 (Value Proposition)</div>
+            <div class="grid-2">
+                <div class="content-box">
+                    <h3>CFO/재무팀 관점</h3>
+                    <p><strong>법인세 절감:</strong> 납입 보험료 전액(또는 상당 부분)을 손금산입하여 매년 법인세 부담을 경감합니다.</p>
+                    <p><strong>우발채무 대비:</strong> 대표이사 유고 시 발생할 수 있는 경영 리스크 및 유족 보상금을 회사의 추가 부담 없이 준비합니다.</p>
+                </div>
+                <div class="content-box">
+                    <h3>CEO/대표이사 관점</h3>
+                    <p><strong>실질 수익률 극대화:</strong> 근로소득세 대비 현저히 낮은 퇴직소득세율을 적용받아 실질 수령액을 높입니다.</p>
+                    <p><strong>자산의 법적 보호:</strong> 법인 명의의 자산 적립으로 개인 자산과 분리하여 안정성을 확보합니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            본 문서는 정보 제공 및 전략 제안 목적으로 작성되었으며, 실제 실행 시 전문가의 세무 조언이 반드시 필요합니다.
+        </div>
+    </div>
+
+    <!-- Page 2 -->
+    <div class="page">
+        <div class="header-decor"></div>
+        
+        <div class="section" style="margin-top: 40px;">
+            <div class="section-title">4. 세무 및 법무 안전장치 (핵심 규정 정비)</div>
+            <p>법인 자금이 개인에게 이전될 때 세무 당국은 <span class="highlight-text">지급의 근거</span>를 가장 엄격하게 확인합니다.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>구분</th>
+                        <th>주요 정비 내용</th>
+                        <th>기여 효과</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>정관 변경</strong></td>
+                        <td>임원 퇴직금 지급 근거 및 관련 규정 위임 사항 명시</td>
+                        <td>법적 효력 발생</td>
+                    </tr>
+                    <tr>
+                        <td><strong>퇴직금 규정</strong></td>
+                        <td>근속연수 x 월평균급여 x 배수(통상 2~3배수) 구체화</td>
+                        <td>손금산입 정당성 확보</td>
+                    </tr>
+                    <tr>
+                        <td><strong>기타 규정</strong></td>
+                        <td>이사회의사록 등을 통한 가입 및 해지 절차 기록</td>
+                        <td>부당행위 배제</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="tip-box">
+                <strong>전문가 어드바이스:</strong> 2020년 이후 세법 개정으로 인해 퇴직소득으로 인정되는 한도는 '2019년 말까지 적립분은 3배수, 2020년 이후 적립분은 2배수'를 기준으로 설계하는 것이 가장 안정적입니다.
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">5. 시뮬레이션 및 기대 효과 (월 800만 원 예시)</div>
+            <div class="content-box">
+                <ul style="list-style: none; padding-left: 0;">
+                    <li>🔹 <strong>연간 총 납입:</strong> 9,600만 원</li>
+                    <li>🔹 <strong>예상 법인세 절감 (세율 20% 가정):</strong> 연간 약 <span class="highlight-text">1,920만 원</span></li>
+                    <li>🔹 <strong>10년 누적 절세액:</strong> 약 <span class="highlight-text">1억 9,200만 원</span></li>
+                    <li style="margin-top:10px; border-top:1px solid #ccc; padding-top:10px;">
+                        <strong>실질 납입 원가:</strong> 9,600만 원 - 1,920만 원 = <strong>7,680만 원</strong> (매년 약 20% 할인 효과)
+                    </li>
+                </ul>
+            </div>
+            <div class="finance-note">
+                <strong>재무팀 참고:</strong> 보험료 납입은 당기순이익을 감소시켜 기업가치(비상장주식 가치)를 하락시키는 효과가 있어, 추후 가업 승계나 증여 시 주식 평가액 조절에도 긍정적인 영향을 미칩니다.
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">6. 결론 및 향후 로드맵</div>
+            <p>본 전략은 <strong style="color:var(--primary-color)">'준비된 은퇴'</strong>와 <strong style="color:var(--primary-color)">'강력한 법인 내실'</strong>을 동시에 실현합니다.</p>
+            
+            <div class="summary-card">
+                <h3>Executive Summary</h3>
+                <p>"법인의 비용으로 대표이사의 미래를 설계하고,<br>기업의 세금 부담을 합법적 자본으로 전환하십시오."</p>
+                <div style="margin-top: 20px; font-weight: bold; border: 1px dashed white; padding: 10px;">
+                    월 납입 제안액: 8,000,000 KRW
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Designated Consulting for High-Net-Worth Corporate Leaders | &copy; 2026 STROY Insurance Strategy Group
+        </div>
+    </div>
+
+</body>
+</html>

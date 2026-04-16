@@ -69,7 +69,7 @@ export async function fetchEventById(id: string): Promise<Event | null> {
  * 이벤트 등록 (pending 상태로 제출)
  */
 export async function createEvent(
-  payload: Omit<Event, 'id' | 'status' | 'platform_fee_rate' | 'admin_note' | 'reviewed_at' | 'created_at' | 'participant_count' | 'host'>
+  payload: Omit<Event, 'id' | 'status' | 'platform_fee_rate' | 'admin_note' | 'reviewed_at' | 'created_at' | 'updated_at' | 'participant_count' | 'host'>
 ): Promise<{ id: string } | null> {
   const { data, error } = await supabase
     .from('events')
@@ -162,7 +162,7 @@ export async function rejectEvent(eventId: string, adminNote: string): Promise<b
  */
 export async function fetchPendingEvents(): Promise<Event[]> {
   const { data, error } = await supabase
-    .from('events')
+    .from('events_with_count')
     .select(`
       *,
       host:users(id, name, avatar_url, church_name)

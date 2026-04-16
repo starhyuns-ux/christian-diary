@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 import { signInWithGoogle } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
@@ -26,7 +27,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 animate-fade-in">
-      <div className="bg-white rounded-3xl border border-black/5 p-8 sm:p-12 w-full max-w-md shadow-2xl animate-slide-up">
+      <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 w-full max-w-md shadow-2xl animate-slide-up">
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="w-20 h-20 rounded-3xl bg-brand flex items-center justify-center mx-auto mb-6 shadow-xl">
@@ -79,7 +80,7 @@ export default function LoginPage() {
             <span className="text-slate-600 font-bold">이용약관</span>과{' '}
             <span className="text-slate-600 font-bold">개인정보처리방침</span>에 동의하게 됩니다.
           </p>
-          <div className="pt-4 border-t border-slate-50">
+          <div className="pt-4 border-t border-slate-200">
             <p className="text-center text-[10px] text-slate-500 font-bold">
               ⚠️ 이단 교단 및 비기독교 단체의 가입은 제한됩니다.
             </p>
@@ -87,5 +88,18 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center text-slate-500 gap-4">
+        <Loader2 className="w-8 h-8 animate-spin text-brand-500" />
+        <p className="text-sm font-medium">로그인 서비스 준비 중...</p>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }

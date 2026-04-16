@@ -60,11 +60,11 @@ h1, h2, h3, h4, .font-modern {
 
 /* Modern Card/Glass styles */
 .glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
 .glass-strong {
@@ -77,7 +77,7 @@ h1, h2, h3, h4, .font-modern {
 
 /* Glow effects (Refined for light mode) */
 .glow-brand {
-  box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.15);
+  box-shadow: 0 10px 30px -5px rgba(79, 70, 229, 0.25);
 }
 
 .glow-gold {
@@ -161,6 +161,28 @@ h1, h2, h3, h4, .font-modern {
 
 .fc-theme-standard td, .fc-theme-standard th {
   border-color: #f1f5f9 !important;
+}
+
+/* Weekend Coloring */
+.fc-day-sun .fc-col-header-cell-cushion,
+.fc-day-sun .fc-daygrid-day-number {
+  color: #ef4444 !important; /* Red for Sunday */
+}
+
+.fc-day-sat .fc-col-header-cell-cushion,
+.fc-day-sat .fc-daygrid-day-number {
+  color: #3b82f6 !important; /* Blue for Saturday */
+}
+
+/* Holiday styling */
+.fc-event-holiday {
+  background-color: #fef2f2 !important;
+  border: 1px solid #fee2e2 !important;
+  color: #ef4444 !important;
+  font-size: 0.7rem !important;
+  padding: 1px 4px !important;
+  font-weight: 700 !important;
+  opacity: 0.9;
 }
 
 /* Animations */

@@ -28,7 +28,7 @@ export default function AdminPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { router.replace('/login'); return }
 
-    const { data: profile } = await supabase.from('users').select('is_admin').eq('id', user.id).single()
+    const { data: profile } = await supabase.from('users').select('is_admin').eq('id', user?.id).single()
     if (!profile?.is_admin) { router.replace('/'); return }
 
     setIsAdmin(true)
