@@ -14,7 +14,7 @@ export type ParticipantStatus = 'pending' | 'confirmed' | 'cancelled'
 export type EventStatus = 'pending' | 'approved' | 'rejected'
 
 /** 후원금 납부 상태 */
-export type DonationStatus = 'pending' | 'submitted' | 'verified'
+export type DonationStatus = 'not_required' | 'pending' | 'submitted' | 'verified'
 
 /** 강의는 수익의 10% 플랫폼 후원비 */
 export const PLATFORM_FEE_RATE: Record<EventCategory, number> = {
@@ -32,6 +32,7 @@ export interface User {
   avatar_url: string | null
   church_name: string | null
   region: string | null
+  is_admin: boolean
   created_at: string
 }
 
@@ -71,6 +72,7 @@ export interface Event {
   admin_note: string | null
   reviewed_at: string | null
   created_at: string
+  updated_at: string
   participant_count?: number
 }
 

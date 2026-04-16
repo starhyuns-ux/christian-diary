@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase, uploadImage } from '@/lib/supabase'
 import { fetchMyJoinedEvents, fetchMyHostedEvents, submitDonationProof } from '@/lib/events'
-import { Event } from '@/types'
+import { Event, User as AppUser } from '@/types'
+import { User as SupabaseUser } from '@supabase/supabase-js'
 import { User, Mail, Calendar, LayoutGrid, Clock, ChevronRight, Settings, LogOut, ShieldCheck, Building, Wallet, Upload, CheckCircle2, History } from 'lucide-react'
 import EventCard from '@/components/events/EventCard'
 import { signOut } from '@/lib/auth'
@@ -13,8 +14,8 @@ import toast from 'react-hot-toast'
 export default function ProfilePage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
-  const [user, setUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
+  const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [profile, setProfile] = useState<AppUser | null>(null)
   const [joinedEvents, setJoinedEvents] = useState<Event[]>([])
   const [hostedEvents, setHostedEvents] = useState<Event[]>([])
   const [activeTab, setActiveTab] = useState<'joined' | 'hosted'>('joined')
