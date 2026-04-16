@@ -126,6 +126,8 @@ export default function CreateEventPage() {
       denomination: form.denomination,
       church_name: form.church_name,
       image_url: imageUrl,
+      donation_status: 'pending',
+      donation_proof_url: null,
     })
     setLoading(false)
 

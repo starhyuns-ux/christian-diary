@@ -13,6 +13,9 @@ export type ParticipantStatus = 'pending' | 'confirmed' | 'cancelled'
 /** 관리자 승인 상태 */
 export type EventStatus = 'pending' | 'approved' | 'rejected'
 
+/** 후원금 납부 상태 */
+export type DonationStatus = 'pending' | 'submitted' | 'verified'
+
 /** 강의는 수익의 10% 플랫폼 후원비 */
 export const PLATFORM_FEE_RATE: Record<EventCategory, number> = {
   lecture: 0.10,
