@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { fetchApprovedEvents } from '@/lib/events'
-import { Event, CATEGORY_CONFIG, REGIONS } from '@/types'
+import { Event, EventCategory, CATEGORY_CONFIG, REGIONS } from '@/types'
 import { Search, MapPin, Calendar, Filter, X, Loader2, ArrowRight } from 'lucide-react'
 import EventCard from '@/components/events/EventCard'
 import CategoryBadge from '@/components/ui/CategoryBadge'
