@@ -88,10 +88,10 @@ export default function SearchPage() {
 
       {/* Categories Tabs */}
       <div className="flex flex-wrap gap-2 mb-10 border-b border-black/5 pb-5">
-        {['all', 'lecture', 'small_group', 'prayer'].map((tab) => (
+        {(['all', 'lecture', 'small_group', 'prayer'] as const).map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab as 'all' | EventCategory)}
+            onClick={() => setActiveTab(tab)}
             className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
               activeTab === tab
                 ? 'bg-brand text-white shadow-md'
