@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '크리스천다이어리',
     description: '모든 신앙 일정을 한 곳에서 나누세요.',
-    url: 'https://christian-diary.vercel.app',
+    url: 'https://v0-christian-diary.vercel.app',
     siteName: '크리스천다이어리',
     locale: 'ko_KR',
     type: 'website',
