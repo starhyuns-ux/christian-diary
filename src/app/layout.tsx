@@ -4,13 +4,11 @@ import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import Navbar from '@/components/layout/Navbar'
 
-/*
 const outfit = Outfit({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-outfit',
 })
-*/
 
 export const viewport: Viewport = {
   themeColor: '#f8faff',
@@ -43,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={`${outfit.variable}`}>
       <body className="bg-pattern min-h-screen" style={{ background: 'var(--color-bg-primary)' }}>
         <div className="fixed inset-0 bg-pattern pointer-events-none opacity-50" />
         <LanguageProvider>
