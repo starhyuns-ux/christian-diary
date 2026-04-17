@@ -157,10 +157,10 @@ export default function HomePage() {
           <span className="w-2 h-2 rounded-full bg-brand-500 inline-block animate-pulse" />
           {t('hero_badge')}
         </div>
-        <h2 className="font-modern text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">
+        <h2 className="font-modern text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3 tracking-tight break-keep">
           {t('hero_title')}
         </h2>
-        <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto font-medium leading-relaxed">
+        <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto font-medium leading-relaxed break-keep">
           {t('hero_desc')}
         </p>
       </div>

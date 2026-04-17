@@ -13,14 +13,14 @@ export default function AboutPage() {
             <Heart className="w-3.5 h-3.5 fill-current" />
             Faith Meets Technology
           </div>
-          <h1 className="font-modern text-5xl sm:text-7xl font-extrabold text-slate-900 leading-tight tracking-tight">
-            믿음의 기록,<br />
+          <h1 className="font-modern text-4xl sm:text-7xl font-extrabold text-slate-900 leading-tight tracking-tight break-keep">
+            믿음의 기록,<br className="hidden sm:block" />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-500">
               그 이상의 가치
             </span>
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            크리스천다이어리는 하나님과 동행하는 매일의 삶을 기록하고,<br />
+          <p className="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed break-keep">
+            크리스천다이어리는 하나님과 동행하는 매일의 삶을 기록하고,<br className="hidden sm:block" />
             믿음의 공동체가 함께 성장할 수 있는 디지털 쉼터를 지향합니다.
           </p>
         </section>
