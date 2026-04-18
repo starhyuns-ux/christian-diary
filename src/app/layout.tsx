@@ -19,6 +19,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://v0-christian-diary.vercel.app'),
   title: '크리스천다이어리 — 신앙 공동체 커뮤니티 캘린더',
   description: '전국 기독교 강의, 소모임, 기도회 일정을 한눈에 확인하고 함께 나누세요. 이단을 제외한 모든 정통 교단이 함께합니다.',
   manifest: '/manifest.json',

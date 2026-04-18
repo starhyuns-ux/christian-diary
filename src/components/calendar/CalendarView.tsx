@@ -26,8 +26,9 @@ export default function CalendarView({ events, onDateClick }: Props) {
     end: event.end_at,
     backgroundColor: CATEGORY_CONFIG[event.category].bgColor,
     borderColor: 'transparent',
-    textColor: '#fff',
+    textColor: CATEGORY_CONFIG[event.category].color, // 색상 대비 최적화
     extendedProps: { category: event.category },
+    className: `fc-event-${event.category}`,
   }))
 
   const holidayEvents = HOLIDAYS_2026.map(holiday => ({
@@ -36,13 +37,13 @@ export default function CalendarView({ events, onDateClick }: Props) {
     end: holiday.end,
     allDay: true,
     className: 'fc-event-holiday',
-    interactive: false, // 공휴일은 클릭 불가
+    interactive: false,
   }))
 
   const calendarEvents: EventSourceInput = [...userEvents, ...holidayEvents]
 
   return (
-    <div className="calendar-container glass p-4 sm:p-6 rounded-[2rem] border border-slate-200">
+    <div className="calendar-container glass p-3 sm:p-5 rounded-[2rem] border border-slate-200">
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
         initialView="dayGridMonth"
@@ -60,7 +61,9 @@ export default function CalendarView({ events, onDateClick }: Props) {
         }}
         events={calendarEvents}
         eventClick={info => {
-          router.push(`/events/${info.event.id}`)
+          if (info.event.id) {
+            router.push(`/events/${info.event.id}`)
+          }
         }}
         dateClick={info => {
           if (onDateClick) {
@@ -68,8 +71,9 @@ export default function CalendarView({ events, onDateClick }: Props) {
           }
         }}
         height="auto"
-        aspectRatio={1} // Fixed aspect ratio for consistency, handled via CSS if needed
-        dayMaxEvents={2}
+        aspectRatio={1.35} // 높이를 줄여 더 컴팩트하게 조절
+        fixedWeekCount={false} // 불필요한 빈 주 방지
+        dayMaxEvents={3}
         moreLinkText="개 더보기"
         nowIndicator
         eventDisplay="block"

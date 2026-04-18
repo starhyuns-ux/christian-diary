@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function EventCard({ event }: Props) {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const config = CATEGORY_CONFIG[event.category]
   const locConfig = LOCATION_TYPE_CONFIG[event.location_type]
   const startDate = parseISO(event.start_at)
@@ -110,7 +110,7 @@ export default function EventCard({ event }: Props) {
                 <span className="text-emerald-600 font-bold">{t('free')}</span>
               ) : (
                 <span className="text-slate-900 font-bold">
-                  {event.fee.toLocaleString()}원
+                  {event.fee.toLocaleString()}{language === 'ko' ? '원' : 'KRW'}
                 </span>
               )}
             </div>

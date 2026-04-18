@@ -15,7 +15,7 @@ import { getGoogleCalendarUrl } from '@/lib/utils'
 import { useLanguage } from '@/lib/contexts/LanguageContext'
 
 export default function EventDetailPage({ params }: { params: { id: string } }) {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const router = useRouter()
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)

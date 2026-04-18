@@ -142,9 +142,9 @@ export default function HomePage() {
 
       {/* Calendar View */}
       {viewMode === 'calendar' && (
-        <div className="glass rounded-2xl p-4 sm:p-6 border border-white/10 mb-8">
+        <div className="mb-8">
           {loading ? (
-            <div className="h-[500px] skeleton rounded-xl" />
+            <div className="h-[450px] skeleton rounded-2xl" />
           ) : (
             <CalendarView events={events} onDateClick={handleDateClick} />
           )}
