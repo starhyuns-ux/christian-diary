@@ -127,36 +127,107 @@ h1, h2, h3, h4, .font-modern {
   --fc-neutral-bg-color: #f8fafc;
   --fc-list-event-hover-bg-color: #f1f5f9;
   font-family: 'Pretendard', sans-serif;
+  font-size: 0.9rem;
+}
+
+/* Toolbar Optimization */
+.fc .fc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem !important;
+}
+
+.fc .fc-toolbar-chunk {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .fc .fc-toolbar-title {
   color: var(--color-text-primary);
-  font-size: 1.25rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+}
+
+.fc .fc-button {
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  text-transform: none !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+}
+
+/* Mobile Specific Toolbar Adjustments */
+@media (max-width: 640px) {
+  .fc .fc-toolbar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .fc .fc-toolbar-title {
+    font-size: 1rem !important;
+    order: -1; /* Title first on mobile */
+    margin-bottom: 0.25rem;
+  }
+
+  .fc .fc-button-group {
+    display: flex;
+    gap: 2px;
+  }
+
+  .fc .fc-button {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.7rem !important;
+  }
 }
 
 .fc .fc-col-header-cell-cushion,
 .fc .fc-daygrid-day-number {
   color: #64748b;
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.875rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 8px !important;
+}
+
+.fc .fc-daygrid-day.fc-day-today {
+  background-color: rgba(79, 70, 229, 0.03) !important;
 }
 
 .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
   color: var(--color-brand);
-  font-weight: 800;
+  font-weight: 900;
+  background: var(--color-bg-primary);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px;
 }
 
 .fc .fc-event {
   border: none;
-  border-radius: 4px;
-  padding: 2px 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  margin: 1px 2px !important;
+  transition: transform 0.2s;
+}
+
+.fc .fc-event:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
 }
 
 .fc-theme-standard td, .fc-theme-standard th {
@@ -166,23 +237,24 @@ h1, h2, h3, h4, .font-modern {
 /* Weekend Coloring */
 .fc-day-sun .fc-col-header-cell-cushion,
 .fc-day-sun .fc-daygrid-day-number {
-  color: #ef4444 !important; /* Red for Sunday */
+  color: #ef4444 !important;
 }
 
 .fc-day-sat .fc-col-header-cell-cushion,
 .fc-day-sat .fc-daygrid-day-number {
-  color: #3b82f6 !important; /* Blue for Saturday */
+  color: #3b82f6 !important;
 }
 
 /* Holiday styling */
 .fc-event-holiday {
-  background-color: #fef2f2 !important;
-  border: 1px solid #fee2e2 !important;
-  color: #ef4444 !important;
-  font-size: 0.7rem !important;
-  padding: 1px 4px !important;
-  font-weight: 700 !important;
+  background-color: #fff1f2 !important;
+  border: 1px solid #ffe4e6 !important;
+  color: #e11d48 !important;
+  font-size: 0.65rem !important;
+  padding: 2px 4px !important;
+  font-weight: 800 !important;
   opacity: 0.9;
+  border-radius: 4px !important;
 }
 
 /* Animations */

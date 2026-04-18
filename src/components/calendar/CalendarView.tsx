@@ -42,36 +42,38 @@ export default function CalendarView({ events, onDateClick }: Props) {
   const calendarEvents: EventSourceInput = [...userEvents, ...holidayEvents]
 
   return (
-    <FullCalendar
-      plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
-      initialView="dayGridMonth"
-      locale="ko"
-      headerToolbar={{
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,listWeek', // Hide timeGridWeek on mobile/tablet to prevent overflow
-      }}
-      buttonText={{
-        today: '오늘',
-        month: '월간',
-        week: '주간',
-        list: '목록',
-      }}
-      events={calendarEvents}
-      eventClick={info => {
-        router.push(`/events/${info.event.id}`)
-      }}
-      dateClick={info => {
-        if (onDateClick) {
-          onDateClick(info.dateStr)
-        }
-      }}
-      height="auto"
-      aspectRatio={window.innerWidth < 640 ? 0.8 : 1.5}
-      dayMaxEvents={window.innerWidth < 640 ? 2 : 3}
-      moreLinkText="개 더보기"
-      nowIndicator
-      eventDisplay="block"
-    />
+    <div className="calendar-container glass p-4 sm:p-6 rounded-[2rem] border border-slate-200">
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        locale="ko"
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,listWeek',
+        }}
+        buttonText={{
+          today: '오늘',
+          month: '월간',
+          week: '주간',
+          list: '목록',
+        }}
+        events={calendarEvents}
+        eventClick={info => {
+          router.push(`/events/${info.event.id}`)
+        }}
+        dateClick={info => {
+          if (onDateClick) {
+            onDateClick(info.dateStr)
+          }
+        }}
+        height="auto"
+        aspectRatio={1} // Fixed aspect ratio for consistency, handled via CSS if needed
+        dayMaxEvents={2}
+        moreLinkText="개 더보기"
+        nowIndicator
+        eventDisplay="block"
+      />
+    </div>
   )
 }
