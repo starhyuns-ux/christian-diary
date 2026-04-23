@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { Event, EventCategory } from '@/types'
+import { format, parseISO, addHours } from 'date-fns'
 
 interface FetchEventsOptions {
   category?: EventCategory[]
@@ -398,25 +399,30 @@ export async function duplicateEvent(original: Event, newStartAt: string): Promi
     status, start_at, end_at, ...rest 
   } = original
 
+  // parseISO를 사용하여 안전하게 날짜 객체 생성
+  const startDate = parseISO(newStartAt)
+  
   // 새로운 종료 시간 계산 (기존 간격 유지 또는 기본 1시간)
-  let newEndAt = null
+  let endDate: Date
   if (original.start_at && original.end_at) {
-    const duration = new Date(original.end_at).getTime() - new Date(original.start_at).getTime()
-    newEndAt = new Date(new Date(newStartAt).getTime() + duration).toISOString()
+    const duration = parseISO(original.end_at).getTime() - parseISO(original.start_at).getTime()
+    endDate = new Date(startDate.getTime() + duration)
   } else {
-    newEndAt = new Date(new Date(newStartAt).getTime() + 60 * 60 * 1000).toISOString()
+    endDate = addHours(startDate, 1)
   }
 
   const { error } = await supabase
     .from('events')
     .insert({
       ...rest,
-      start_at: newStartAt,
-      end_at: newEndAt,
+      start_at: startDate.toISOString(),
+      end_at: endDate.toISOString(),
       status: 'approved',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       reviewed_at: new Date().toISOString(),
+      donation_status: 'none', // 후원 상태 초기화
+      donation_proof_url: null
     })
 
   if (error) {

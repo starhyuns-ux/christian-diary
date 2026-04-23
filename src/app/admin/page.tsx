@@ -23,6 +23,8 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<'events' | 'donations' | 'history'>('events')
   const [stats, setStats] = useState({ totalViews: 0, todayViews: 0 })
   const [actionLoading, setActionLoading] = useState<string | null>(null)
+  const [duplicatingEvent, setDuplicatingEvent] = useState<Event | null>(null)
+  const [newStartDate, setNewStartDate] = useState('')
 
   useEffect(() => {
     checkAdmin()
@@ -95,15 +97,13 @@ export default function AdminPage() {
     setActionLoading(null)
   }
   
-  const handleDuplicate = async (event: Event) => {
-    const defaultDate = format(new Date(), "yyyy-MM-dd'T'HH:mm")
-    const newStartAt = window.prompt('새로운 시작 일시를 입력해주세요 (YYYY-MM-DDTHH:mm)', defaultDate)
+  const handleDuplicate = async () => {
+    if (!duplicatingEvent || !newStartDate) return
     
-    if (!newStartAt) return
-    
-    setActionLoading(event.id + '_dup')
-    const ok = await duplicateEvent(event, new Date(newStartAt).toISOString())
+    setActionLoading(duplicatingEvent.id + '_dup')
+    const ok = await duplicateEvent(duplicatingEvent, new Date(newStartDate).toISOString())
     setActionLoading(null)
+    setDuplicatingEvent(null)
     
     if (ok) {
       toast.success('이벤트가 새로운 날짜로 재등록되었습니다! ✓')
@@ -329,14 +329,17 @@ export default function AdminPage() {
                         {event.is_featured ? '고정 중' : '상단 고정'}
                       </button>
                     )}
-                    <button
-                      onClick={() => handleDuplicate(event)}
-                      disabled={actionLoading === event.id + '_dup'}
-                      className="p-3 rounded-2xl bg-brand/5 text-brand hover:bg-brand/10 transition-all"
-                      title="달력에 다시 추가 (복제)"
-                    >
-                      {actionLoading === event.id + '_dup' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Calendar className="w-5 h-5" />}
-                    </button>
+                      <button
+                        onClick={() => {
+                          setDuplicatingEvent(event)
+                          setNewStartDate(format(new Date(), "yyyy-MM-dd'T'HH:mm"))
+                        }}
+                        disabled={actionLoading === event.id + '_dup'}
+                        className="p-3 rounded-2xl bg-brand/5 text-brand hover:bg-brand/10 transition-all"
+                        title="달력에 다시 추가 (복제)"
+                      >
+                        {actionLoading === event.id + '_dup' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Calendar className="w-5 h-5" />}
+                      </button>
                     <Link 
                       href={`/events/${event.id}`}
                       className="p-3 rounded-2xl bg-slate-50 text-slate-400 hover:text-brand transition-all"
@@ -349,6 +352,56 @@ export default function AdminPage() {
             ))}
           </div>
         )
+      )}
+
+      {/* Duplication Modal */}
+      {duplicatingEvent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl border border-white/20 animate-scale-up">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center">
+                <Calendar className="w-6 h-6 text-brand" />
+              </div>
+              <div>
+                <h3 className="text-xl font-extrabold text-slate-900">모임 재등록</h3>
+                <p className="text-sm text-slate-500 font-medium">새로운 시작 날짜를 선택해주세요</p>
+              </div>
+            </div>
+            
+            <div className="space-y-4 mb-8">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">선택된 모임</p>
+                <p className="text-slate-900 font-bold">{duplicatingEvent.title}</p>
+              </div>
+              
+              <div>
+                <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 ml-1">시작 일시 선택</label>
+                <input 
+                  type="datetime-local" 
+                  value={newStartDate}
+                  onChange={(e) => setNewStartDate(e.target.value)}
+                  className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all font-bold text-slate-700"
+                />
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setDuplicatingEvent(null)}
+                className="flex-1 py-4 rounded-2xl bg-slate-100 text-slate-600 font-extrabold hover:bg-slate-200 transition-all active:scale-95"
+              >
+                취소
+              </button>
+              <button 
+                onClick={handleDuplicate}
+                disabled={!newStartDate || !!actionLoading}
+                className="flex-1 py-4 rounded-2xl bg-brand text-white font-extrabold shadow-lg shadow-brand/20 hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95 disabled:opacity-50"
+              >
+                {actionLoading?.includes('_dup') ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : '재등록 완료'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
