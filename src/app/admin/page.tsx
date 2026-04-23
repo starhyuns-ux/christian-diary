@@ -269,7 +269,6 @@ export default function AdminPage() {
                         승인
                       </button>
                     </div>
-                  </div>
                 </div>
               )
             })}
@@ -461,8 +460,6 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
-        </div>
-      )}
         </div>
       )}
 
