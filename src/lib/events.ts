@@ -20,7 +20,6 @@ export async function fetchApprovedEvents(options: FetchEventsOptions = {}): Pro
       host:users(id, name, avatar_url, church_name, is_verified)
     `)
     .eq('status', 'approved')
-    .gte('end_at', new Date().toISOString()) // 종료되지 않은 이벤트만
     .order('is_featured', { ascending: false }) // 상단 고정 우선
     .order('start_at', { ascending: true })
 
