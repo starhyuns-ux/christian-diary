@@ -394,11 +394,6 @@ export async function toggleEventFeatured(eventId: string, isFeatured: boolean) 
  * 관리자용 기능으로, 즉시 'approved' 상태로 생성됩니다.
  */
 export async function duplicateEvent(original: Event, newStartAt: string): Promise<boolean> {
-  const { 
-    id, host, participant_count, created_at, updated_at, reviewed_at, 
-    status, start_at, end_at, ...rest 
-  } = original
-
   // parseISO를 사용하여 안전하게 날짜 객체 생성
   const startDate = parseISO(newStartAt)
   
@@ -411,22 +406,41 @@ export async function duplicateEvent(original: Event, newStartAt: string): Promi
     endDate = addHours(startDate, 1)
   }
 
+  // 삽입할 데이터 객체를 명시적으로 생성 (view 필드 등 불필요한 필드 제거)
+  const insertData = {
+    host_id: original.host_id,
+    title: original.title,
+    description: original.description,
+    category: original.category,
+    start_at: startDate.toISOString(),
+    end_at: endDate.toISOString(),
+    location_type: original.location_type,
+    location_name: original.location_name,
+    location_address: original.location_address,
+    max_participants: original.max_participants,
+    fee: original.fee,
+    image_url: original.image_url,
+    church_name: original.church_name,
+    is_recurring: original.is_recurring || false,
+    recurrence_rule: original.recurrence_rule || 'none',
+    region: original.region || '전국',
+    denomination: original.denomination || '',
+    external_link: original.external_link || null,
+    status: 'approved', // 관리자가 등록하므로 즉시 승인
+    is_featured: false, // 재등록 시 상단 고정은 초기화
+    donation_status: 'none', // 후원 상태 초기화
+    donation_proof_url: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    reviewed_at: new Date().toISOString()
+  }
+
   const { error } = await supabase
     .from('events')
-    .insert({
-      ...rest,
-      start_at: startDate.toISOString(),
-      end_at: endDate.toISOString(),
-      status: 'approved',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      reviewed_at: new Date().toISOString(),
-      donation_status: 'none', // 후원 상태 초기화
-      donation_proof_url: null
-    })
+    .insert(insertData)
 
   if (error) {
-    console.error('[duplicateEvent] error:', error)
+    console.error('[duplicateEvent] error details:', error)
     return false
   }
   return true
