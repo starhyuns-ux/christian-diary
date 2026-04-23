@@ -175,12 +175,12 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
   const handleDelete = async () => {
     if (!confirm('정말로 이 이벤트를 삭제하시겠습니까? 관련 데이터가 모두 삭제됩니다.')) return
     
-    const ok = await deleteEvent(eventId)
-    if (ok) {
+    const res = await deleteEvent(eventId)
+    if (res.success) {
       toast.success('이벤트가 삭제되었습니다')
       router.push('/')
     } else {
-      toast.error('삭제에 실패했습니다')
+      toast.error(res.error || '삭제에 실패했습니다')
     }
   }
 

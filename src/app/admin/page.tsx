@@ -120,15 +120,15 @@ export default function AdminPage() {
     if (!confirm(`선택한 ${selectedIds.length}개의 이벤트를 모두 삭제하시겠습니까?`)) return
     
     setActionLoading('bulk_delete')
-    const ok = await bulkDeleteEvents(selectedIds)
+    const res = await bulkDeleteEvents(selectedIds)
     setActionLoading(null)
     
-    if (ok) {
+    if (res.success) {
       toast.success('선택한 이벤트가 삭제되었습니다')
       setSelectedIds([])
       loadData()
     } else {
-      toast.error('삭제 처리 중 오류가 발생했습니다')
+      toast.error(res.error || '삭제 처리 중 오류가 발생했습니다')
     }
   }
 

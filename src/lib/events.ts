@@ -173,56 +173,59 @@ export async function fetchEventParticipants(eventId: string) {
 
 /**
  * 이벤트 삭제
+ * 제약 조건을 피하기 위해 관련 데이터(메시지, 참가자)를 먼저 삭제합니다.
  */
-export async function deleteEvent(eventId: string): Promise<boolean> {
-  // 1. 참가자 데이터 먼저 삭제
-  await supabase
-    .from('event_participants')
-    .delete()
-    .eq('event_id', eventId)
+export async function deleteEvent(eventId: string): Promise<{ success: boolean, error?: string }> {
+  try {
+    // 1. 관련 메시지 먼저 삭제
+    await supabase.from('messages').delete().eq('event_id', eventId)
 
-  // 2. 이벤트 삭제
-  const { error } = await supabase
-    .from('events')
-    .delete()
-    .eq('id', eventId)
+    // 2. 참가자 데이터 삭제
+    await supabase.from('event_participants').delete().eq('event_id', eventId)
 
-  if (error) {
-    console.error('[deleteEvent] error:', error)
-    return false
+    // 3. 이벤트 삭제
+    const { error } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', eventId)
+
+    if (error) throw error
+    return { success: true }
+  } catch (err: any) {
+    console.error('[deleteEvent] error:', err)
+    return { success: false, error: err.message || '삭제 중 오류가 발생했습니다' }
   }
-  return true
 }
 
 /**
  * 관리자: 여러 이벤트를 한꺼번에 삭제
- * 제약 조건을 피하기 위해 관련 참가자 데이터를 먼저 삭제합니다.
+ * 제약 조건을 피하기 위해 관련 데이터(메시지, 참가자)를 먼저 삭제합니다.
  */
-export async function bulkDeleteEvents(ids: string[]): Promise<boolean> {
-  // 1. 관련 참가자 데이터 먼저 삭제
-  await supabase
-    .from('event_participants')
-    .delete()
-    .in('event_id', ids)
+export async function bulkDeleteEvents(ids: string[]): Promise<{ success: boolean, error?: string }> {
+  try {
+    // 1. 관련 메시지 먼저 삭제
+    await supabase.from('messages').delete().in('event_id', ids)
 
-  // 2. 이벤트 삭제
-  const { error, count } = await supabase
-    .from('events')
-    .delete({ count: 'exact' })
-    .in('id', ids)
+    // 2. 관련 참가자 데이터 삭제
+    await supabase.from('event_participants').delete().in('event_id', ids)
 
-  if (error) {
-    console.error('[bulkDeleteEvents] error:', error)
-    return false
+    // 3. 이벤트 삭제
+    const { error, count } = await supabase
+      .from('events')
+      .delete({ count: 'exact' })
+      .in('id', ids)
+
+    if (error) throw error
+    
+    if (count === 0) {
+      return { success: false, error: '삭제된 항목이 없습니다. 권한이 없거나 이미 삭제된 항목일 수 있습니다.' }
+    }
+
+    return { success: true }
+  } catch (err: any) {
+    console.error('[bulkDeleteEvents] error:', err)
+    return { success: false, error: err.message || '일괄 삭제 중 오류가 발생했습니다' }
   }
-
-  // 삭제된 행이 하나도 없다면 실패로 간주 (권한 부족 등)
-  if (count === 0) {
-    console.warn('[bulkDeleteEvents] No rows deleted. Check RLS policies or IDs.')
-    return false
-  }
-
-  return true
 }
 
 /**
