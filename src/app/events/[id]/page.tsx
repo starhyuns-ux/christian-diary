@@ -1,4 +1,4 @@
-export const revalidate = 0
+export const dynamic = 'force-dynamic'
 
 import { Metadata } from 'next'
 import { fetchEventById } from '@/lib/events'

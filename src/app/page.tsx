@@ -1,8 +1,8 @@
 'use client'
 
-export const revalidate = 0
+export const dynamic = 'force-dynamic'
 
-import dynamic from 'next/dynamic'
+import nextDynamic from 'next/dynamic'
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { format, parseISO, startOfWeek, endOfWeek } from 'date-fns'
 import { EventCategory, CATEGORY_CONFIG, Event, REGIONS } from '@/types'
@@ -14,7 +14,7 @@ import Link from 'next/link'
 import EventCard from '@/components/events/EventCard'
 import { useLanguage } from '@/lib/contexts/LanguageContext'
 
-const CalendarView = dynamic(() => import('@/components/calendar/CalendarView'), {
+const CalendarView = nextDynamic(() => import('@/components/calendar/CalendarView'), {
   ssr: false,
   loading: () => (
     <div className="w-full h-[600px] skeleton rounded-2xl" />
