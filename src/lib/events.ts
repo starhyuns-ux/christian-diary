@@ -188,6 +188,22 @@ export async function deleteEvent(id: string): Promise<boolean> {
 }
 
 /**
+ * 관리자: 여러 이벤트를 한꺼번에 삭제
+ */
+export async function bulkDeleteEvents(ids: string[]): Promise<boolean> {
+  const { error } = await supabase
+    .from('events')
+    .delete()
+    .in('id', ids)
+
+  if (error) {
+    console.error('[bulkDeleteEvents] error:', error)
+    return false
+  }
+  return true
+}
+
+/**
  * 관리자: 이벤트 승인
  */
 export async function approveEvent(eventId: string, adminNote?: string): Promise<boolean> {

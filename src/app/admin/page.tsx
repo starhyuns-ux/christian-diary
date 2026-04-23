@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { fetchPendingEvents, approveEvent, rejectEvent, fetchDonationPendingEvents, verifyDonation, fetchAllEventsForAdmin, toggleEventFeatured, duplicateEvent } from '@/lib/events'
+import { fetchPendingEvents, approveEvent, rejectEvent, fetchDonationPendingEvents, verifyDonation, fetchAllEventsForAdmin, toggleEventFeatured, duplicateEvent, bulkDeleteEvents } from '@/lib/events'
 import { fetchVisitorStats } from '@/lib/analytics'
 import { Event, CATEGORY_CONFIG } from '@/types'
-import { ShieldCheck, Check, X, Clock, Loader2, Wallet, Building, Eye, CheckCircle2, RefreshCw, Calendar } from 'lucide-react'
+import { ShieldCheck, Check, X, Clock, Loader2, Wallet, Building, Eye, CheckCircle2, RefreshCw, Calendar, Trash2 } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import CategoryBadge from '@/components/ui/CategoryBadge'
@@ -25,6 +25,7 @@ export default function AdminPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [duplicatingEvent, setDuplicatingEvent] = useState<Event | null>(null)
   const [newStartDate, setNewStartDate] = useState('')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
   useEffect(() => {
     checkAdmin()
@@ -38,6 +39,7 @@ export default function AdminPage() {
     if (!profile?.is_admin) { router.replace('/'); return }
 
     setIsAdmin(true)
+    setSelectedIds([])
     loadData()
   }
 
@@ -110,6 +112,35 @@ export default function AdminPage() {
       loadData()
     } else {
       toast.error('재등록 중 오류가 발생했습니다')
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return
+    if (!confirm(`선택한 ${selectedIds.length}개의 이벤트를 모두 삭제하시겠습니까?`)) return
+    
+    setActionLoading('bulk_delete')
+    const ok = await bulkDeleteEvents(selectedIds)
+    setActionLoading(null)
+    
+    if (ok) {
+      toast.success('선택한 이벤트가 삭제되었습니다')
+      setSelectedIds([])
+      loadData()
+    } else {
+      toast.error('삭제 처리 중 오류가 발생했습니다')
+    }
+  }
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
+  }
+
+  const toggleSelectAll = (ids: string[]) => {
+    if (selectedIds.length === ids.length) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(ids)
     }
   }
 
@@ -195,12 +226,26 @@ export default function AdminPage() {
           </div>
         ) : (
           <div className="space-y-4">
+            <div className="flex items-center gap-2 px-2">
+               <input 
+                 type="checkbox" 
+                 checked={selectedIds.length > 0 && selectedIds.length === events.length}
+                 onChange={() => toggleSelectAll(events.map(e => e.id))}
+                 className="w-4 h-4 rounded border-slate-300 text-brand focus:ring-brand"
+               />
+               <span className="text-xs font-bold text-slate-500">전체 선택</span>
+            </div>
             {events.map(event => {
               const start = parseISO(event.start_at)
               return (
-                <div key={event.id} className="bg-white rounded-3xl border border-black/5 p-6 shadow-md hover:shadow-xl transition-all duration-300">
-                  <div className="flex items-start justify-between gap-6">
-                    <div className="flex-1 min-w-0">
+                <div key={event.id} className={`bg-white rounded-3xl border p-6 shadow-md hover:shadow-xl transition-all duration-300 flex gap-4 items-start ${selectedIds.includes(event.id) ? 'border-brand ring-1 ring-brand/20' : 'border-black/5'}`}>
+                  <input 
+                    type="checkbox" 
+                    checked={selectedIds.includes(event.id)}
+                    onChange={() => toggleSelect(event.id)}
+                    className="w-5 h-5 rounded-lg border-slate-300 text-brand focus:ring-brand mt-1"
+                  />
+                  <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-3 flex-wrap">
                         <CategoryBadge category={event.category} />
                         <span className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
@@ -297,9 +342,24 @@ export default function AdminPage() {
           </div>
         ) : (
           <div className="space-y-4">
+            <div className="flex items-center gap-2 px-2">
+               <input 
+                 type="checkbox" 
+                 checked={selectedIds.length > 0 && selectedIds.length === historyEvents.length}
+                 onChange={() => toggleSelectAll(historyEvents.map(e => e.id))}
+                 className="w-4 h-4 rounded border-slate-300 text-brand focus:ring-brand"
+               />
+               <span className="text-xs font-bold text-slate-500">전체 선택</span>
+            </div>
             {historyEvents.map(event => (
-              <div key={event.id} className="bg-white rounded-3xl border border-black/5 p-6 shadow-md opacity-85 hover:opacity-100 transition-all">
-                <div className="flex items-center justify-between gap-4">
+              <div key={event.id} className={`bg-white rounded-3xl border p-6 shadow-md opacity-85 hover:opacity-100 transition-all flex gap-4 items-center ${selectedIds.includes(event.id) ? 'border-brand ring-1 ring-brand/20 opacity-100' : 'border-black/5'}`}>
+                <input 
+                  type="checkbox" 
+                  checked={selectedIds.includes(event.id)}
+                  onChange={() => toggleSelect(event.id)}
+                  className="w-5 h-5 rounded-lg border-slate-300 text-brand focus:ring-brand"
+                />
+                <div className="flex-1 min-w-0 flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <CategoryBadge category={event.category} />
@@ -401,6 +461,36 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+        </div>
+      )}
+
+      {/* Bulk Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[60] animate-slide-up">
+           <div className="bg-slate-900 text-white px-8 py-5 rounded-[2rem] shadow-2xl flex items-center gap-10 border border-white/10 backdrop-blur-md">
+              <div className="flex flex-col">
+                 <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-0.5">선택됨</span>
+                 <span className="text-lg font-extrabold">{selectedIds.length}개 항목</span>
+              </div>
+              <div className="flex items-center gap-3">
+                 <button 
+                   onClick={() => setSelectedIds([])}
+                   className="px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/20 font-bold text-sm transition-all"
+                 >
+                    취소
+                 </button>
+                 <button 
+                   onClick={handleBulkDelete}
+                   disabled={actionLoading === 'bulk_delete'}
+                   className="px-8 py-3 rounded-2xl bg-red-500 hover:bg-red-600 font-extrabold text-sm flex items-center gap-2 transition-all shadow-lg shadow-red-500/20 active:scale-95 disabled:opacity-50"
+                 >
+                    {actionLoading === 'bulk_delete' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    삭제하기
+                 </button>
+              </div>
+           </div>
         </div>
       )}
     </div>

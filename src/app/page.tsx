@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import { format, parseISO } from 'date-fns'
+import { format, parseISO, startOfWeek, endOfWeek } from 'date-fns'
 import { EventCategory, CATEGORY_CONFIG, Event, REGIONS } from '@/types'
 import { fetchApprovedEvents } from '@/lib/events'
 import { expandRecurringEvents } from '@/lib/utils'
@@ -66,11 +66,9 @@ export default function HomePage() {
 
   const { weeklyEvents, monthlyEvents, filteredEvents } = useMemo(() => {
     const today = new Date()
-    today.setHours(0, 0, 0, 0)
     
-    const nextWeek = new Date(today)
-    nextWeek.setDate(today.getDate() + 7)
-    nextWeek.setHours(23, 59, 59, 999)
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 })
+    const weekEnd = endOfWeek(today, { weekStartsOn: 1 })
     
     const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1)
     const currentMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999)
@@ -81,9 +79,15 @@ export default function HomePage() {
       return new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
     })
 
+    const now = new Date()
     const weekly = sortedAll.filter(event => {
       const d = parseISO(event.start_at)
-      return d >= today && d <= nextWeek
+      // 이번 주 범위 확인
+      const isInWeek = d >= weekStart && d <= weekEnd
+      // 시작 시간으로부터 1시간이 지났는지 확인 (현재 < 시작+1시간)
+      const isStillFresh = now.getTime() < (d.getTime() + 60 * 60 * 1000)
+      
+      return isInWeek && isStillFresh
     })
 
     const monthly = sortedAll.filter(event => {
