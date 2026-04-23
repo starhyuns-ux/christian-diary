@@ -16,10 +16,11 @@ export async function fetchApprovedEvents(options: FetchEventsOptions = {}): Pro
     .from('events_with_count')
     .select(`
       *,
-      host:users(id, name, avatar_url, church_name)
+      host:users(id, name, avatar_url, church_name, is_verified)
     `)
     .eq('status', 'approved')
     .gte('end_at', new Date().toISOString()) // 종료되지 않은 이벤트만
+    .order('is_featured', { ascending: false }) // 상단 고정 우선
     .order('start_at', { ascending: true })
 
   if (options.category && options.category.length > 0) {
@@ -48,11 +49,12 @@ export async function fetchApprovedEvents(options: FetchEventsOptions = {}): Pro
  * 이벤트 단건 조회
  */
 export async function fetchEventById(id: string): Promise<Event | null> {
+  // 뷰 대신 테이블에서 직접 가져와서 컬럼 누락 문제 방지
   const { data, error } = await supabase
-    .from('events_with_count')
+    .from('events')
     .select(`
       *,
-      host:users(id, name, avatar_url, church_name)
+      host:users(id, name, avatar_url, church_name, phone, is_verified)
     `)
     .eq('id', id)
     .single()
@@ -71,9 +73,16 @@ export async function fetchEventById(id: string): Promise<Event | null> {
 export async function createEvent(
   payload: Omit<Event, 'id' | 'status' | 'platform_fee_rate' | 'admin_note' | 'reviewed_at' | 'created_at' | 'updated_at' | 'participant_count' | 'host'>
 ): Promise<{ id: string } | null> {
+  // 카테고리에 따른 수수료율 설정
+  const platform_fee_rate = payload.category === 'lecture' ? 0.10 : 0
+
   const { data, error } = await supabase
     .from('events')
-    .insert({ ...payload, status: 'pending' })
+    .insert({ 
+      ...payload, 
+      status: 'pending',
+      platform_fee_rate 
+    })
     .select('id')
     .single()
 
@@ -86,12 +95,18 @@ export async function createEvent(
 }
 
 /**
- * 이벤트 참가 신청
+ * 이벤트 참가 신청 (로그인 유저 또는 익명 유저)
  */
-export async function joinEvent(eventId: string, userId: string): Promise<boolean> {
+export async function joinEvent(eventId: string, userId: string | null, guestInfo?: { name: string, phone: string }): Promise<boolean> {
   const { error } = await supabase
     .from('event_participants')
-    .insert({ event_id: eventId, user_id: userId, status: 'confirmed' })
+    .insert({
+      event_id: eventId,
+      user_id: userId,
+      guest_name: guestInfo?.name || null,
+      guest_phone: guestInfo?.phone || null,
+      status: 'confirmed'
+    })
 
   if (error) {
     console.error('[joinEvent] error:', error)
@@ -112,6 +127,61 @@ export async function leaveEvent(eventId: string, userId: string): Promise<boole
 
   if (error) {
     console.error('[leaveEvent] error:', error)
+    return false
+  }
+  return true
+}
+
+/**
+ * 이벤트 수정
+ */
+export async function updateEvent(id: string, updates: Partial<Event>): Promise<boolean> {
+  const { error } = await supabase
+    .from('events')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', id)
+
+  if (error) {
+    console.error('[updateEvent] error:', error)
+    return false
+  }
+  return true
+}
+
+/**
+ * 이벤트 참가자 목록 조회 (호스트용)
+ */
+export async function fetchEventParticipants(eventId: string) {
+  const { data, error } = await supabase
+    .from('event_participants')
+    .select(`
+      *,
+      user:users(id, name, avatar_url, church_name, phone)
+    `)
+    .eq('event_id', eventId)
+    .order('registered_at', { ascending: false })
+
+  if (error) {
+    console.error('[fetchEventParticipants] error:', error)
+    return []
+  }
+  return data
+}
+
+/**
+ * 이벤트 삭제
+ */
+export async function deleteEvent(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('events')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error('[deleteEvent] error:', error)
     return false
   }
   return true
@@ -280,4 +350,40 @@ export async function fetchDonationPendingEvents(): Promise<Event[]> {
   }
 
   return (data ?? []) as Event[]
+}
+
+/**
+ * 관리자: 모든 상태의 이벤트 목록 조회
+ */
+export async function fetchAllEventsForAdmin(): Promise<Event[]> {
+  const { data, error } = await supabase
+    .from('events_with_count')
+    .select(`
+      *,
+      host:users(id, name, avatar_url, church_name, is_verified)
+    `)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('[fetchAllEventsForAdmin] error:', error)
+    return []
+  }
+
+  return (data ?? []) as Event[]
+}
+
+/**
+ * 이벤트 상단 고정 여부 토글
+ */
+export async function toggleEventFeatured(eventId: string, isFeatured: boolean) {
+  const { error } = await supabase
+    .from('events')
+    .update({ is_featured: isFeatured })
+    .eq('id', eventId)
+
+  if (error) {
+    console.error('[toggleEventFeatured] error:', error)
+    return false
+  }
+  return true
 }

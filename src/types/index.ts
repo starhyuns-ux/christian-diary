@@ -4,6 +4,7 @@ export type EventCategory =
   | 'prayer'
   | 'worship'
   | 'volunteer'
+  | 'missionary_shelter'
   | 'other'
 
 export type LocationType = 'online' | 'offline' | 'hybrid'
@@ -23,6 +24,7 @@ export const PLATFORM_FEE_RATE: Record<EventCategory, number> = {
   prayer: 0,
   worship: 0,
   volunteer: 0,
+  missionary_shelter: 0,
   other: 0,
 }
 
@@ -31,9 +33,24 @@ export interface User {
   name: string
   avatar_url: string | null
   church_name: string | null
+  phone?: string | null
   region?: string | null
+  denomination?: string | null
   is_admin?: boolean
+  is_verified?: boolean
   created_at?: string
+}
+
+export interface Message {
+  id: string
+  sender_id: string
+  receiver_id: string
+  event_id: string | null
+  content: string
+  is_read: boolean
+  created_at: string
+  sender?: User
+  receiver?: User
 }
 
 export interface Event {
@@ -46,7 +63,7 @@ export interface Event {
   /** 관리자 승인 상태: 승인된 이벤트만 공개 노출 */
   status: EventStatus
   start_at: string
-  end_at: string
+  end_at?: string | null
   location_type: LocationType
   location_name: string | null
   location_address: string | null
@@ -74,6 +91,27 @@ export interface Event {
   created_at: string
   updated_at: string
   participant_count?: number
+  original_id?: string // 반복 일정 확장 시 원본 ID 추적용
+  is_featured?: boolean // 관리자에 의한 상단 고정 노출 여부
+  external_link?: string | null // 홈페이지나 오픈채팅 등 외부 링크
+}
+
+export interface Prayer {
+  id: string
+  user_id: string | null
+  user?: User
+  guest_name?: string | null
+  content: string
+  created_at: string
+  amen_count: number
+  is_amened?: boolean // 현재 사용자가 아멘을 눌렀는지 여부
+}
+
+export interface PrayerAmen {
+  id: string
+  prayer_id: string
+  user_id: string
+  created_at: string
 }
 
 export interface EventParticipant {
@@ -122,6 +160,13 @@ export const CATEGORY_CONFIG: Record<
     bgColor: 'rgba(251, 146, 60, 0.8)',
     dotColor: '#fb923c',
     className: 'category-volunteer',
+  },
+  missionary_shelter: {
+    label: '선교사 쉼터',
+    color: '#a7f3d0',
+    bgColor: 'rgba(5, 150, 105, 0.8)',
+    dotColor: '#059669',
+    className: 'category-shelter',
   },
   other: {
     label: '기타',

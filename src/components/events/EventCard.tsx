@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Event, CATEGORY_CONFIG, LOCATION_TYPE_CONFIG } from '@/types'
-import { MapPin, Users, Calendar, Repeat, Wallet, Info, CalendarPlus } from 'lucide-react'
+import { MapPin, Users, Calendar, Repeat, Wallet, Info, CalendarPlus, ShieldCheck, Star } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import CategoryBadge from '@/components/ui/CategoryBadge'
@@ -20,8 +20,12 @@ export default function EventCard({ event }: Props) {
     && event.participant_count >= event.max_participants
 
   return (
-    <Link href={`/events/${event.id}`} className="block group">
-      <div className="glass rounded-2xl border border-slate-200 p-0 hover:border-brand/20 hover:bg-white transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-2xl group-hover:glow-brand h-full flex flex-col overflow-hidden">
+    <Link href={`/events/${event.id}`} className={`block group ${event.is_featured ? 'scale-105 z-10' : ''}`}>
+      <div className={`glass rounded-2xl border p-0 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-2xl group-hover:glow-brand h-full flex flex-col overflow-hidden ${
+        event.is_featured 
+          ? 'border-amber-200 bg-amber-50/10 shadow-lg shadow-amber-500/5' 
+          : 'border-slate-200 hover:border-brand/20 hover:bg-white'
+      }`}>
         {/* Thumbnail Image */}
         {event.image_url && (
           <div className="relative aspect-[16/10] w-full overflow-hidden border-b border-slate-200">
@@ -31,13 +35,27 @@ export default function EventCard({ event }: Props) {
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
+            {event.is_featured && (
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500 text-white text-[10px] font-extrabold shadow-lg shadow-amber-500/30 animate-pulse">
+                <Star className="w-3 h-3 fill-current" />
+                AD / FEATURED
+              </div>
+            )}
           </div>
         )}
 
         <div className="p-5 flex flex-col flex-1">
           {/* Category + Location */}
           <div className="flex items-center justify-between mb-3.5">
-            <CategoryBadge category={event.category} />
+            <div className="flex items-center gap-2">
+              <CategoryBadge category={event.category} />
+              {!event.image_url && event.is_featured && (
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-600 text-[10px] font-extrabold">
+                  <Star className="w-2.5 h-2.5 fill-current" />
+                  추천
+                </span>
+              )}
+            </div>
             <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1 uppercase tracking-wider">
               <span>{locConfig.icon}</span>
               {locConfig.label}

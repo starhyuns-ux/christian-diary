@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { fetchPendingEvents, approveEvent, rejectEvent, fetchDonationPendingEvents, verifyDonation } from '@/lib/events'
+import { fetchPendingEvents, approveEvent, rejectEvent, fetchDonationPendingEvents, verifyDonation, fetchAllEventsForAdmin, toggleEventFeatured } from '@/lib/events'
+import { fetchVisitorStats } from '@/lib/analytics'
 import { Event, CATEGORY_CONFIG } from '@/types'
 import { ShieldCheck, Check, X, Clock, Loader2, Wallet, Building, Eye, CheckCircle2, RefreshCw, Calendar } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
@@ -17,7 +19,9 @@ export default function AdminPage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [events, setEvents] = useState<Event[]>([])
   const [donationEvents, setDonationEvents] = useState<Event[]>([])
-  const [activeTab, setActiveTab] = useState<'events' | 'donations'>('events')
+  const [historyEvents, setHistoryEvents] = useState<Event[]>([])
+  const [activeTab, setActiveTab] = useState<'events' | 'donations' | 'history'>('events')
+  const [stats, setStats] = useState({ totalViews: 0, todayViews: 0 })
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   useEffect(() => {
@@ -38,12 +42,16 @@ export default function AdminPage() {
   const loadData = async () => {
     setLoading(true)
     try {
-      const [pending, donations] = await Promise.all([
+      const [pending, donations, allHistory, visitorStats] = await Promise.all([
         fetchPendingEvents(),
-        fetchDonationPendingEvents()
+        fetchDonationPendingEvents(),
+        fetchAllEventsForAdmin(),
+        fetchVisitorStats()
       ])
       setEvents(pending)
       setDonationEvents(donations)
+      setHistoryEvents(allHistory)
+      setStats(visitorStats)
     } finally {
       setLoading(false)
     }
@@ -75,6 +83,18 @@ export default function AdminPage() {
     }
   }
 
+  const handleToggleFeatured = async (eventId: string, currentStatus: boolean) => {
+    setActionLoading(eventId)
+    const success = await toggleEventFeatured(eventId, !currentStatus)
+    if (success) {
+      toast.success(currentStatus ? '상단 고정이 해제되었습니다' : '상단 고정으로 설정되었습니다! 🚀')
+      loadData()
+    } else {
+      toast.error('설정 변경에 실패했습니다')
+    }
+    setActionLoading(null)
+  }
+
   if (!isAdmin) return null
 
   return (
@@ -97,6 +117,22 @@ export default function AdminPage() {
         </button>
       </div>
 
+      {/* Analytics Summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
+        <div className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm">
+          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">총 방문자</p>
+          <p className="text-2xl font-extrabold text-slate-900">{stats.totalViews.toLocaleString()}</p>
+        </div>
+        <div className="bg-white p-6 rounded-3xl border border-black/5 shadow-sm">
+          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">오늘 방문</p>
+          <p className="text-2xl font-extrabold text-brand">{stats.todayViews.toLocaleString()}</p>
+        </div>
+        <div className="hidden sm:block bg-white p-6 rounded-3xl border border-black/5 shadow-sm">
+          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">전체 모임</p>
+          <p className="text-2xl font-extrabold text-emerald-600">{historyEvents.length.toLocaleString()}</p>
+        </div>
+      </div>
+
       {/* Tabs */}
       <div className="flex bg-white p-1.5 rounded-2xl border border-black/5 shadow-sm mb-10 w-fit">
         <button
@@ -114,6 +150,14 @@ export default function AdminPage() {
           }`}
         >
           후원금 검토 ({donationEvents.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('history')}
+          className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${
+            activeTab === 'history' ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          관리 이력 ({historyEvents.length})
         </button>
       </div>
 
@@ -168,7 +212,7 @@ export default function AdminPage() {
             })}
           </div>
         )
-      ) : (
+      ) : activeTab === 'donations' ? (
         /* ── DONATION TAB CONTENT ── */
         donationEvents.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-3xl border border-black/5 shadow-sm">
@@ -220,6 +264,59 @@ export default function AdminPage() {
                       {actionLoading === event.id + '_verify' ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                       후원금 확인 완료
                     </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      ) : (
+        /* ── HISTORY TAB CONTENT ── */
+        historyEvents.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-3xl border border-black/5 shadow-sm">
+            <p className="text-5xl mb-4">📋</p>
+            <p className="text-slate-900 font-bold text-lg">기록된 이력이 없습니다</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {historyEvents.map(event => (
+              <div key={event.id} className="bg-white rounded-3xl border border-black/5 p-6 shadow-md opacity-85 hover:opacity-100 transition-all">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CategoryBadge category={event.category} />
+                      {event.status === 'approved' ? (
+                        <span className="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-2 py-1 rounded-md">승인됨</span>
+                      ) : event.status === 'rejected' ? (
+                        <span className="bg-rose-100 text-rose-700 text-[10px] font-extrabold px-2 py-1 rounded-md">거절됨</span>
+                      ) : (
+                        <span className="bg-slate-100 text-slate-700 text-[10px] font-extrabold px-2 py-1 rounded-md">대기중</span>
+                      )}
+                    </div>
+                    <h4 className="text-slate-900 font-bold text-base font-modern">{event.title}</h4>
+                    <p className="text-slate-500 text-xs font-medium mt-1">{event.church_name} · {format(parseISO(event.start_at), 'M/d(E)', { locale: ko })}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {event.status === 'approved' && (
+                      <button
+                        onClick={() => handleToggleFeatured(event.id, !!event.is_featured)}
+                        disabled={actionLoading === event.id}
+                        className={`px-4 py-2.5 rounded-2xl transition-all flex items-center gap-2 font-bold text-xs ${
+                          event.is_featured 
+                            ? 'bg-amber-100 text-amber-600 border border-amber-200 shadow-sm' 
+                            : 'bg-slate-50 text-slate-400 hover:text-slate-600 border border-transparent'
+                        }`}
+                      >
+                        <ShieldCheck className={`w-4 h-4 ${event.is_featured ? 'fill-amber-500' : ''}`} />
+                        {event.is_featured ? '고정 중' : '상단 고정'}
+                      </button>
+                    )}
+                    <Link 
+                      href={`/events/${event.id}`}
+                      className="p-3 rounded-2xl bg-slate-50 text-slate-400 hover:text-brand transition-all"
+                    >
+                      <Eye className="w-5 h-5" />
+                    </Link>
                   </div>
                 </div>
               </div>

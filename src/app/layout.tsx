@@ -23,6 +23,10 @@ export const metadata: Metadata = {
   title: '크리스천다이어리 — 신앙 공동체 커뮤니티 캘린더',
   description: '전국 기독교 강의, 소모임, 기도회 일정을 한눈에 확인하고 함께 나누세요. 이단을 제외한 모든 정통 교단이 함께합니다.',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/icons/icon.svg',
+    apple: '/icons/icon.svg',
+  },
   openGraph: {
     title: '크리스천다이어리',
     description: '모든 신앙 일정을 한 곳에서 나누세요.',
@@ -34,7 +38,9 @@ export const metadata: Metadata = {
 }
 
 import InquiryFAB from '@/components/ui/InquiryFAB'
+import DonationNotice from '@/components/ui/DonationNotice'
 import { LanguageProvider } from '@/lib/contexts/LanguageContext'
+import AnalyticsTracker from '@/components/analytics/AnalyticsTracker'
 
 export default function RootLayout({
   children,
@@ -46,10 +52,12 @@ export default function RootLayout({
       <body className="bg-pattern min-h-screen" style={{ background: 'var(--color-bg-primary)' }}>
         <div className="fixed inset-0 bg-pattern pointer-events-none opacity-50" />
         <LanguageProvider>
+          <AnalyticsTracker />
           <Navbar />
           <main className="relative z-10">
             {children}
           </main>
+          <DonationNotice />
           <InquiryFAB />
           <Toaster
             position="top-right"

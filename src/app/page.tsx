@@ -5,7 +5,9 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { format, parseISO } from 'date-fns'
 import { EventCategory, CATEGORY_CONFIG, Event, REGIONS } from '@/types'
 import { fetchApprovedEvents } from '@/lib/events'
-import { Plus, MapPin, Calendar, Loader2, RefreshCw } from 'lucide-react'
+import { expandRecurringEvents } from '@/lib/utils'
+import { getRandomVerse, BibleVerse } from '@/lib/bible'
+import { Plus, MapPin, Calendar, Loader2, RefreshCw, Quote } from 'lucide-react'
 import Link from 'next/link'
 import EventCard from '@/components/events/EventCard'
 import { useLanguage } from '@/lib/contexts/LanguageContext'
@@ -21,6 +23,11 @@ export default function HomePage() {
   const { t } = useLanguage()
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
+  const [dailyVerse, setDailyVerse] = useState<BibleVerse | null>(null)
+  
+  useEffect(() => {
+    setDailyVerse(getRandomVerse())
+  }, [])
   const [activeCategories, setActiveCategories] = useState<EventCategory[]>([])
   const [selectedRegion, setSelectedRegion] = useState('전국')
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -33,7 +40,9 @@ export default function HomePage() {
       category: activeCategories.length > 0 ? activeCategories : undefined,
       region: selectedRegion,
     })
-    setEvents(data)
+    // 반복 일정 확장 적용
+    const expanded = expandRecurringEvents(data)
+    setEvents(expanded)
     setLoading(false)
   }, [activeCategories, selectedRegion])
 
@@ -56,16 +65,61 @@ export default function HomePage() {
   }
 
   const filteredEvents = useMemo(() => {
-    if (!selectedDate) return events
-    return events.filter(event => 
-      format(parseISO(event.start_at), 'yyyy-MM-dd') === selectedDate
-    )
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    const nextWeek = new Date(today)
+    nextWeek.setDate(today.getDate() + 7)
+    nextWeek.setHours(23, 59, 59, 999)
+
+    const result = selectedDate
+      ? events.filter(event => format(parseISO(event.start_at), 'yyyy-MM-dd') === selectedDate)
+      : events.filter(event => {
+          // 상단 고정(is_featured)은 날짜 필터 무시하고 항상 노출 (종료된 모임 제외)
+          if (event.is_featured) return true
+          
+          const eventDate = parseISO(event.start_at)
+          return eventDate >= today && eventDate <= nextWeek
+        })
+
+    // 상단 고정(is_featured) 우선 정렬
+    return [...result].sort((a, b) => {
+      if (a.is_featured && !b.is_featured) return -1
+      if (!a.is_featured && b.is_featured) return 1
+      // 고정 상태가 같으면 날짜 순 정렬
+      return new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
+    })
   }, [events, selectedDate])
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Hero Section with Daily Verse */}
+      <section className="relative pt-8 pb-12 overflow-hidden mb-8">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full -z-10 opacity-30">
+          <div className="absolute top-0 left-10 w-72 h-72 bg-brand/10 rounded-full blur-[100px]" />
+          <div className="absolute bottom-0 right-10 w-96 h-96 bg-gold/5 rounded-full blur-[120px]" />
+        </div>
+
+        <div className="max-w-4xl mx-auto text-center space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/50 backdrop-blur-sm border border-brand/10 shadow-sm animate-fade-in">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+            <span className="text-[9px] font-extrabold text-brand uppercase tracking-widest">오늘의 말씀</span>
+          </div>
+          
+          {dailyVerse && (
+            <div className="relative py-2 px-6 group">
+              <Quote className="absolute -top-4 -left-2 w-10 h-10 text-brand/5 -rotate-12 transition-transform group-hover:rotate-0" />
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-snug break-keep tracking-tight mb-3">
+                "{dailyVerse.text}"
+              </h2>
+              <p className="text-brand font-extrabold text-[10px] tracking-widest uppercase">{dailyVerse.reference}</p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6 animate-slide-up pt-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 animate-slide-up">
         {/* Category Filters */}
         <div className="flex flex-wrap gap-2 flex-1">
           <button

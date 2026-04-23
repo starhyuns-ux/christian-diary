@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Menu, X, Calendar, Search, Plus, User, LogOut, LogIn, ShieldCheck, Info } from 'lucide-react'
+import { Menu, X, Calendar, Search, Plus, User, LogOut, LogIn, ShieldCheck, Info, MessageSquare, BookOpen } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { signOut } from '@/lib/auth'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -22,8 +22,10 @@ export default function Navbar() {
 
   const navLinks = [
     { href: '/', label: t('calendar'), icon: Calendar },
+    { href: '/prayer-talk', label: t('prayerTalk'), icon: MessageSquare },
     { href: '/about', label: t('about'), icon: Info },
     { href: '/events', label: t('events'), icon: Calendar },
+    { href: '/guide', label: '사용 가이드', icon: BookOpen },
     { href: '/search', label: t('search'), icon: Search },
   ]
 

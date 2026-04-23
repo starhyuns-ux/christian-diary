@@ -23,11 +23,14 @@ export default function CalendarView({ events, onDateClick }: Props) {
     id: event.id,
     title: event.title,
     start: event.start_at,
-    end: event.end_at,
+    end: event.end_at || undefined,
     backgroundColor: CATEGORY_CONFIG[event.category].bgColor,
     borderColor: 'transparent',
     textColor: CATEGORY_CONFIG[event.category].color, // 색상 대비 최적화
-    extendedProps: { category: event.category },
+    extendedProps: { 
+      category: event.category,
+      original_id: event.original_id 
+    },
     className: `fc-event-${event.category}`,
   }))
 
@@ -36,6 +39,8 @@ export default function CalendarView({ events, onDateClick }: Props) {
     start: holiday.start,
     end: holiday.end,
     allDay: true,
+    backgroundColor: '#fff1f2', // 연한 분홍 배경
+    textColor: '#e11d48',       // 진한 빨간 글씨
     className: 'fc-event-holiday',
     interactive: false,
   }))
@@ -61,8 +66,10 @@ export default function CalendarView({ events, onDateClick }: Props) {
         }}
         events={calendarEvents}
         eventClick={info => {
-          if (info.event.id) {
-            router.push(`/events/${info.event.id}`)
+          const originalId = info.event.extendedProps.original_id
+          const eventId = originalId || info.event.id
+          if (eventId) {
+            router.push(`/events/${eventId}`)
           }
         }}
         dateClick={info => {

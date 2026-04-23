@@ -36,7 +36,6 @@ export default function CreateEventPage() {
     description: '',
     category: 'small_group' as EventCategory,
     start_at: '',
-    end_at: '',
     location_type: 'offline' as LocationType,
     location_name: '',
     location_address: '',
@@ -49,11 +48,33 @@ export default function CreateEventPage() {
     region: '서울',
     denomination: '무교단/초교단',
     church_name: '',
+    external_link: '',
   })
 
   const update = (key: string, value: string | boolean) => {
-    setForm(prev => ({ ...prev, [key]: value }))
+    setForm(prev => {
+      const next = { ...prev, [key]: value }
+      // 로컬 스토리지에 임시 저장 (모바일 보안 환경 대응)
+      try {
+        localStorage.setItem('pending_event_form', JSON.stringify(next))
+      } catch (e) {
+        console.warn('Failed to save to localStorage', e)
+      }
+      return next
+    })
   }
+
+  // 초기 로드 시 데이터 복구
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('pending_event_form')
+      if (saved) {
+        setForm(JSON.parse(saved))
+      }
+    } catch (e) {
+      console.error('Failed to parse saved form', e)
+    }
+  }, [])
 
   const platformFee = PLATFORM_FEE_RATE[form.category]
   const feeAmount = parseInt(form.fee) || 0
@@ -82,8 +103,7 @@ export default function CreateEventPage() {
   const handleSubmit = async () => {
     // 유효성 검사
     if (!form.title.trim()) return toast.error('제목을 입력해주세요')
-    if (!form.start_at || !form.end_at) return toast.error('날짜/시간을 입력해주세요')
-    if (new Date(form.start_at) >= new Date(form.end_at)) return toast.error('종료 시간이 시작 시간보다 늦어야 합니다')
+    if (!form.start_at) return toast.error('시작 날짜/시간을 입력해주세요')
     if (!form.church_name.trim()) return toast.error('주최 교회/단체명을 입력해주세요')
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -98,10 +118,12 @@ export default function CreateEventPage() {
     // 1. 이미지 업로드 (있는 경우)
     let imageUrl = null
     if (imageFile) {
-      imageUrl = await uploadImage(imageFile)
-      if (!imageUrl) {
+      try {
+        imageUrl = await uploadImage(imageFile)
+      } catch (err: any) {
         setLoading(false)
-        return toast.error('이미지 업로드에 실패했습니다')
+        console.error('Upload failed:', err)
+        return toast.error(`이미지 업로드 실패: ${err.message || '알 수 없는 오류'}`)
       }
     }
 
@@ -112,7 +134,6 @@ export default function CreateEventPage() {
       description: form.description,
       category: form.category,
       start_at: new Date(form.start_at).toISOString(),
-      end_at: new Date(form.end_at).toISOString(),
       location_type: form.location_type,
       location_name: form.location_name || null,
       location_address: form.location_address || null,
@@ -128,10 +149,14 @@ export default function CreateEventPage() {
       image_url: imageUrl,
       donation_status: 'pending',
       donation_proof_url: null,
+      external_link: form.external_link || null,
+      // 종료 시간 자동 설정 (시작 시간 + 1시간)
+      end_at: new Date(new Date(form.start_at).getTime() + 60 * 60 * 1000).toISOString(),
     })
     setLoading(false)
 
     if (result) {
+      localStorage.removeItem('pending_event_form') // 성공 시 임시 데이터 삭제
       toast.success('이벤트가 등록되었습니다! 관리자 검토 후 게시됩니다 🙏')
       router.push('/')
     } else {
@@ -224,6 +249,21 @@ export default function CreateEventPage() {
                   )
                 })}
               </div>
+              {form.category === 'missionary_shelter' && (
+                <div className="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-start gap-3 animate-in slide-in-from-top-2">
+                  <div className="p-2 rounded-xl bg-white shadow-sm border border-emerald-50 text-xl">
+                    🏠
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-emerald-900 font-extrabold text-xs">선교사 쉼터 등록 안내</p>
+                    <p className="text-emerald-700/80 text-[11px] font-medium leading-relaxed">
+                      "집을 구하지 못한 선교사님들의 안식처"<br/>
+                      사역 후 돌아오신 선교사님들이 평안히 쉴 수 있는 공간 정보를 나눠주세요. 
+                      시설 현황, 위치, 이용 방법 등을 자세히 적어주시면 큰 도움이 됩니다.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* 제목 */}
@@ -244,7 +284,9 @@ export default function CreateEventPage() {
               <textarea
                 value={form.description}
                 onChange={e => update('description', e.target.value)}
-                placeholder="모임에 대해 자세히 설명해주세요"
+                placeholder={form.category === 'missionary_shelter' 
+                  ? "쉼터의 위치, 시설 안내(방 개수, 취사 가능 여부), 이용 대상 및 기간, 연락처 등을 자세히 적어주세요."
+                  : "모임에 대해 자세히 설명해주세요"}
                 rows={5}
                 className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-black/5 text-slate-900 placeholder-slate-400 text-sm font-bold focus:outline-none focus:border-brand/30 focus:bg-white transition-all shadow-sm font-modern resize-none"
               />
@@ -281,7 +323,7 @@ export default function CreateEventPage() {
         {/* ── STEP 2: 장소 & 일정 ── */}
         {step === 2 && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div>
                 <label className="block text-[11px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">시작 일시 *</label>
                 <input type="datetime-local" value={form.start_at}
@@ -289,24 +331,39 @@ export default function CreateEventPage() {
                   className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-black/5 text-slate-900 text-sm font-bold focus:outline-none focus:border-brand/30 focus:bg-white transition-all shadow-sm [color-scheme:light]"
                 />
               </div>
-              <div>
-                <label className="block text-[11px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">종료 일시 *</label>
-                <input type="datetime-local" value={form.end_at}
-                  onChange={e => update('end_at', e.target.value)}
-                  min={form.start_at}
-                  className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-black/5 text-slate-900 text-sm font-bold focus:outline-none focus:border-brand/30 focus:bg-white transition-all shadow-sm [color-scheme:light]"
-                />
-              </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-black/5 flex items-center gap-3">
-              <input type="checkbox" id="recurring" checked={form.is_recurring}
-                onChange={e => update('is_recurring', e.target.checked)}
-                className="w-5 h-5 accent-brand rounded-lg"
-              />
-              <label htmlFor="recurring" className="text-sm text-slate-600 font-bold cursor-pointer">
-                매주 반복되는 일정한 모임인가요?
-              </label>
+            <div className="p-4 rounded-2xl bg-slate-50 border border-black/5 space-y-4">
+              <div className="flex items-center gap-3">
+                <input type="checkbox" id="recurring" checked={form.is_recurring}
+                  onChange={e => update('is_recurring', e.target.checked)}
+                  className="w-5 h-5 accent-brand rounded-lg"
+                />
+                <label htmlFor="recurring" className="text-sm text-slate-600 font-bold cursor-pointer">
+                  정기적으로 반복되는 모임인가요?
+                </label>
+              </div>
+              
+              {form.is_recurring && (
+                <div className="flex gap-4 pl-8">
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input type="radio" name="recurrence_rule" value="weekly" 
+                      checked={form.recurrence_rule === 'weekly' || !form.recurrence_rule}
+                      onChange={e => update('recurrence_rule', e.target.value)}
+                      className="w-4 h-4 accent-brand"
+                    />
+                    <span className="text-sm font-bold text-slate-500 group-hover:text-slate-700">매주</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input type="radio" name="recurrence_rule" value="monthly" 
+                      checked={form.recurrence_rule === 'monthly'}
+                      onChange={e => update('recurrence_rule', e.target.value)}
+                      className="w-4 h-4 accent-brand"
+                    />
+                    <span className="text-sm font-bold text-slate-500 group-hover:text-slate-700">매월</span>
+                  </label>
+                </div>
+              )}
             </div>
 
             <div>
@@ -352,6 +409,15 @@ export default function CreateEventPage() {
                 className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-black/5 text-slate-900 placeholder-slate-400 text-sm font-bold focus:outline-none focus:border-brand/30 focus:bg-white transition-all shadow-sm font-modern"
               />
             )}
+
+            <div>
+              <label className="block text-[11px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">홈페이지 또는 오픈채팅 링크</label>
+              <input type="url" value={form.external_link}
+                onChange={e => update('external_link', e.target.value)}
+                placeholder="예: https://open.kakao.com/... 또는 공식 홈페이지"
+                className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-black/5 text-slate-900 placeholder-slate-400 text-sm font-bold focus:outline-none focus:border-brand/30 focus:bg-white transition-all shadow-sm font-modern"
+              />
+            </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -425,6 +491,7 @@ export default function CreateEventPage() {
       {/* Navigation buttons */}
       <div className="flex items-center justify-between mt-10">
         <button
+          type="button"
           onClick={() => setStep(s => Math.max(1, s - 1))}
           disabled={step === 1}
           className="px-8 py-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-600 text-sm font-extrabold hover:text-slate-900 hover:border-slate-300 hover:bg-white disabled:opacity-0 disabled:pointer-events-none transition-all shadow-sm"
@@ -434,6 +501,7 @@ export default function CreateEventPage() {
 
         {step < 3 ? (
           <button
+            type="button"
             onClick={() => setStep(s => Math.min(3, s + 1))}
             className="flex items-center gap-2 px-12 py-4 rounded-2xl bg-brand text-white text-sm font-extrabold hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all shadow-lg"
           >
@@ -441,6 +509,7 @@ export default function CreateEventPage() {
           </button>
         ) : (
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={loading}
             className="flex items-center gap-2 px-12 py-4 rounded-2xl bg-slate-900 text-white text-sm font-extrabold hover:bg-black hover:shadow-2xl hover:-translate-y-1 active:scale-95 transition-all shadow-lg disabled:opacity-50"
