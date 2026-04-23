@@ -174,11 +174,18 @@ export async function fetchEventParticipants(eventId: string) {
 /**
  * 이벤트 삭제
  */
-export async function deleteEvent(id: string): Promise<boolean> {
+export async function deleteEvent(eventId: string): Promise<boolean> {
+  // 1. 참가자 데이터 먼저 삭제
+  await supabase
+    .from('event_participants')
+    .delete()
+    .eq('event_id', eventId)
+
+  // 2. 이벤트 삭제
   const { error } = await supabase
     .from('events')
     .delete()
-    .eq('id', id)
+    .eq('id', eventId)
 
   if (error) {
     console.error('[deleteEvent] error:', error)
@@ -189,17 +196,32 @@ export async function deleteEvent(id: string): Promise<boolean> {
 
 /**
  * 관리자: 여러 이벤트를 한꺼번에 삭제
+ * 제약 조건을 피하기 위해 관련 참가자 데이터를 먼저 삭제합니다.
  */
 export async function bulkDeleteEvents(ids: string[]): Promise<boolean> {
-  const { error } = await supabase
-    .from('events')
+  // 1. 관련 참가자 데이터 먼저 삭제
+  await supabase
+    .from('event_participants')
     .delete()
+    .in('event_id', ids)
+
+  // 2. 이벤트 삭제
+  const { error, count } = await supabase
+    .from('events')
+    .delete({ count: 'exact' })
     .in('id', ids)
 
   if (error) {
     console.error('[bulkDeleteEvents] error:', error)
     return false
   }
+
+  // 삭제된 행이 하나도 없다면 실패로 간주 (권한 부족 등)
+  if (count === 0) {
+    console.warn('[bulkDeleteEvents] No rows deleted. Check RLS policies or IDs.')
+    return false
+  }
+
   return true
 }
 
