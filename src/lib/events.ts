@@ -387,3 +387,41 @@ export async function toggleEventFeatured(eventId: string, isFeatured: boolean) 
   }
   return true
 }
+
+/**
+ * 기존 이벤트를 복제하여 새로운 날짜로 등록합니다.
+ * 관리자용 기능으로, 즉시 'approved' 상태로 생성됩니다.
+ */
+export async function duplicateEvent(original: Event, newStartAt: string): Promise<boolean> {
+  const { 
+    id, host, participant_count, created_at, updated_at, reviewed_at, 
+    status, start_at, end_at, ...rest 
+  } = original
+
+  // 새로운 종료 시간 계산 (기존 간격 유지 또는 기본 1시간)
+  let newEndAt = null
+  if (original.start_at && original.end_at) {
+    const duration = new Date(original.end_at).getTime() - new Date(original.start_at).getTime()
+    newEndAt = new Date(new Date(newStartAt).getTime() + duration).toISOString()
+  } else {
+    newEndAt = new Date(new Date(newStartAt).getTime() + 60 * 60 * 1000).toISOString()
+  }
+
+  const { error } = await supabase
+    .from('events')
+    .insert({
+      ...rest,
+      start_at: newStartAt,
+      end_at: newEndAt,
+      status: 'approved',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      reviewed_at: new Date().toISOString(),
+    })
+
+  if (error) {
+    console.error('[duplicateEvent] error:', error)
+    return false
+  }
+  return true
+}

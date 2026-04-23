@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { fetchPendingEvents, approveEvent, rejectEvent, fetchDonationPendingEvents, verifyDonation, fetchAllEventsForAdmin, toggleEventFeatured } from '@/lib/events'
+import { fetchPendingEvents, approveEvent, rejectEvent, fetchDonationPendingEvents, verifyDonation, fetchAllEventsForAdmin, toggleEventFeatured, duplicateEvent } from '@/lib/events'
 import { fetchVisitorStats } from '@/lib/analytics'
 import { Event, CATEGORY_CONFIG } from '@/types'
 import { ShieldCheck, Check, X, Clock, Loader2, Wallet, Building, Eye, CheckCircle2, RefreshCw, Calendar } from 'lucide-react'
@@ -93,6 +93,24 @@ export default function AdminPage() {
       toast.error('설정 변경에 실패했습니다')
     }
     setActionLoading(null)
+  }
+  
+  const handleDuplicate = async (event: Event) => {
+    const defaultDate = format(new Date(), "yyyy-MM-dd'T'HH:mm")
+    const newStartAt = window.prompt('새로운 시작 일시를 입력해주세요 (YYYY-MM-DDTHH:mm)', defaultDate)
+    
+    if (!newStartAt) return
+    
+    setActionLoading(event.id + '_dup')
+    const ok = await duplicateEvent(event, new Date(newStartAt).toISOString())
+    setActionLoading(null)
+    
+    if (ok) {
+      toast.success('이벤트가 새로운 날짜로 재등록되었습니다! ✓')
+      loadData()
+    } else {
+      toast.error('재등록 중 오류가 발생했습니다')
+    }
   }
 
   if (!isAdmin) return null
@@ -311,6 +329,14 @@ export default function AdminPage() {
                         {event.is_featured ? '고정 중' : '상단 고정'}
                       </button>
                     )}
+                    <button
+                      onClick={() => handleDuplicate(event)}
+                      disabled={actionLoading === event.id + '_dup'}
+                      className="p-3 rounded-2xl bg-brand/5 text-brand hover:bg-brand/10 transition-all"
+                      title="달력에 다시 추가 (복제)"
+                    >
+                      {actionLoading === event.id + '_dup' ? <Loader2 className="w-5 h-5 animate-spin" /> : <Calendar className="w-5 h-5" />}
+                    </button>
                     <Link 
                       href={`/events/${event.id}`}
                       className="p-3 rounded-2xl bg-slate-50 text-slate-400 hover:text-brand transition-all"
