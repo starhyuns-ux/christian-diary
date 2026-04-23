@@ -329,7 +329,6 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
                   <p className="text-slate-900 text-base font-bold">{format(startDate, 'yyyy.MM.dd')}</p>
                   <p className="text-slate-500 text-sm font-medium mt-0.5">
                     {format(startDate, 'HH:mm')}
-                    {endDate && ` ~ ${format(endDate, 'HH:mm')}`}
                   </p>
                 </div>
               </div>
@@ -342,7 +341,17 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
                   <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">{t('location')}</p>
                   <p className="text-slate-900 text-base font-bold truncate break-keep">{event.location_name || '...'}</p>
                   {event.location_address && (
-                    <p className="text-slate-500 text-sm font-medium truncate mt-0.5">{event.location_address}</p>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(event.location_address!);
+                        toast.success('주소가 복사되었습니다!');
+                      }}
+                      className="text-slate-500 text-sm font-medium truncate mt-0.5 hover:text-brand hover:underline text-left w-full group transition-all"
+                      title="주소 복사"
+                    >
+                      {event.location_address}
+                      <Copy className="w-3 h-3 inline-block ml-1.5 opacity-0 group-hover:opacity-100" />
+                    </button>
                   )}
                 </div>
               </div>

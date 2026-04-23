@@ -58,6 +58,7 @@ export default function CalendarView({ events, onDateClick }: Props) {
           center: 'title',
           right: 'dayGridMonth,listWeek',
         }}
+        displayEventEnd={false}
         buttonText={{
           today: '오늘',
           month: '월간',
