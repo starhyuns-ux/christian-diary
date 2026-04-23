@@ -64,18 +64,38 @@ export default function HomePage() {
     }, 100)
   }
 
-  const filteredEvents = useMemo(() => {
-    const result = selectedDate
-      ? events.filter(event => format(parseISO(event.start_at), 'yyyy-MM-dd') === selectedDate)
-      : events
+  const { weeklyEvents, monthlyEvents, filteredEvents } = useMemo(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    
+    const nextWeek = new Date(today)
+    nextWeek.setDate(today.getDate() + 7)
+    nextWeek.setHours(23, 59, 59, 999)
+    
+    const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1)
+    const currentMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999)
 
-    // 상단 고정(is_featured) 우선 정렬
-    return [...result].sort((a, b) => {
+    const sortedAll = [...events].sort((a, b) => {
       if (a.is_featured && !b.is_featured) return -1
       if (!a.is_featured && b.is_featured) return 1
-      // 고정 상태가 같으면 날짜 순 정렬
       return new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
     })
+
+    const weekly = sortedAll.filter(event => {
+      const d = parseISO(event.start_at)
+      return d >= today && d <= nextWeek
+    })
+
+    const monthly = sortedAll.filter(event => {
+      const d = parseISO(event.start_at)
+      return d >= currentMonthStart && d <= currentMonthEnd
+    })
+
+    const filtered = selectedDate
+      ? sortedAll.filter(event => format(parseISO(event.start_at), 'yyyy-MM-dd') === selectedDate)
+      : sortedAll
+
+    return { weeklyEvents: weekly, monthlyEvents: monthly, filteredEvents: filtered }
   }, [events, selectedDate])
 
   return (
@@ -207,17 +227,40 @@ export default function HomePage() {
       </div>
 
       {/* Event Cards */}
+      {/* Weekly Schedule Section */}
+      {!selectedDate && viewMode === 'calendar' && weeklyEvents.length > 0 && (
+        <section className="mb-12 animate-fade-in">
+          <div className="flex items-center gap-3 mb-6">
+            <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2.5 font-modern">
+              <div className="w-8 h-8 rounded-xl bg-brand/10 flex items-center justify-center">
+                <Calendar className="w-4 h-4 text-brand" />
+              </div>
+              주간 일정
+              <span className="text-sm font-bold text-slate-400 ml-1">{weeklyEvents.length}</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {weeklyEvents.map(event => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Monthly / Filtered Events section */}
       <section className="mt-8 scroll-mt-20" ref={eventListRef}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
           <div className="flex items-center gap-3">
             <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2.5 font-modern">
-              <Calendar className="w-6 h-6 text-brand" />
+              <div className="w-10 h-10 rounded-2xl bg-slate-900/5 flex items-center justify-center">
+                <Plus className="w-5 h-5 text-slate-900" />
+              </div>
               {selectedDate 
                 ? `${format(parseISO(selectedDate), 'M월 d일')} ${t('events')}`
-                : viewMode === 'list' ? t('events') : t('upcomingEvents')}
+                : viewMode === 'list' ? t('events') : '이번 달 행사'}
               {!loading && (
                 <span className="text-sm font-bold text-slate-400 ml-1">
-                  {filteredEvents.length}
+                  {selectedDate ? filteredEvents.length : monthlyEvents.length}
                 </span>
               )}
             </h2>
@@ -244,11 +287,11 @@ export default function HomePage() {
               <div key={i} className="h-64 skeleton rounded-2xl" />
             ))}
           </div>
-        ) : filteredEvents.length === 0 ? (
+        ) : (selectedDate ? filteredEvents : monthlyEvents).length === 0 ? (
           <div className="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
             <p className="text-5xl mb-4">🕊️</p>
             <p className="text-slate-400 font-medium mb-1">
-              {selectedDate ? `${format(parseISO(selectedDate), 'M월 d일')}에는 일정이 없습니다` : t('noEvents')}
+              {selectedDate ? `${format(parseISO(selectedDate), 'M월 d일')}에는 일정이 없습니다` : '이번 달에는 예정된 행사가 없습니다'}
             </p>
             <p className="text-slate-500 text-sm mb-6">첫 번째 모임을 등록해보세요</p>
             <Link
@@ -261,7 +304,7 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredEvents.map(event => (
+            {(selectedDate ? filteredEvents : monthlyEvents).map(event => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>

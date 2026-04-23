@@ -1,3 +1,5 @@
+export const revalidate = 0
+
 import { Metadata } from 'next'
 import { fetchEventById } from '@/lib/events'
 import EventDetailClient from './EventDetailClient'
