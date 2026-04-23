@@ -1,5 +1,7 @@
 'use client'
 
+export const revalidate = 0
+
 import dynamic from 'next/dynamic'
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { format, parseISO, startOfWeek, endOfWeek } from 'date-fns'
