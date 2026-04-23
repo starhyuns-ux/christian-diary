@@ -65,22 +65,9 @@ export default function HomePage() {
   }
 
   const filteredEvents = useMemo(() => {
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    
-    const nextWeek = new Date(today)
-    nextWeek.setDate(today.getDate() + 7)
-    nextWeek.setHours(23, 59, 59, 999)
-
     const result = selectedDate
       ? events.filter(event => format(parseISO(event.start_at), 'yyyy-MM-dd') === selectedDate)
-      : events.filter(event => {
-          // 상단 고정(is_featured)은 날짜 필터 무시하고 항상 노출 (종료된 모임 제외)
-          if (event.is_featured) return true
-          
-          const eventDate = parseISO(event.start_at)
-          return eventDate >= today && eventDate <= nextWeek
-        })
+      : events
 
     // 상단 고정(is_featured) 우선 정렬
     return [...result].sort((a, b) => {

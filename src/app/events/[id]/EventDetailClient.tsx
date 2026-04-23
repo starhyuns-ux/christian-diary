@@ -584,15 +584,23 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
                 <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">모임 전용 QR 코드</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <button onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('링크가 복사되었습니다!'); }} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all border border-slate-100"><Copy className="w-5 h-5 text-slate-600" /><span className="text-[11px] font-bold text-slate-700">링크 복사</span></button>
+                <button onClick={() => { 
+                  const shareUrl = `${window.location.origin}${window.location.pathname}?v=${new Date().getTime()}`;
+                  navigator.clipboard.writeText(shareUrl); 
+                  toast.success('링크가 복사되었습니다!'); 
+                }} className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all border border-slate-100">
+                  <Copy className="w-5 h-5 text-slate-600" />
+                  <span className="text-[11px] font-bold text-slate-700">링크 복사</span>
+                </button>
                 <button onClick={() => { 
                   if (navigator.share) { 
                     const kstDate = toKST(event.start_at);
                     const dateStr = format(kstDate, 'M/dd(E) HH:mm', { locale: ko });
+                    const shareUrl = `${window.location.origin}${window.location.pathname}?v=${new Date().getTime()}`;
                     navigator.share({ 
                       title: event.title, 
                       text: `[초대장] ${dateStr} ${event.title} 모임에 초대합니다!`, 
-                      url: window.location.href 
+                      url: shareUrl
                     }); 
                   } else { 
                     toast.error('이 브라우저는 공유 기능을 지원하지 않습니다.'); 
