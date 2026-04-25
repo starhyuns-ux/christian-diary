@@ -14,7 +14,6 @@ function LoginContent() {
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
   const [loading, setLoading] = useState(false)
-  const [consents, setConsents] = useState({ general: false, sensitive: false })
   const [modal, setModal] = useState<{ isOpen: boolean, title: string, content: string }>({ isOpen: false, title: '', content: '' })
   const [isInApp, setIsInApp] = useState(false)
   const [email, setEmail] = useState('')
@@ -100,37 +99,10 @@ function LoginContent() {
 
         {/* Login buttons */}
         <div className="flex flex-col gap-5">
-          <div className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-100">
-             <label className="flex items-start gap-3 cursor-pointer group">
-                <input 
-                  type="checkbox" 
-                  checked={consents.general} 
-                  onChange={e => setConsents({...consents, general: e.target.checked})}
-                  className="mt-1 w-4 h-4 rounded border-slate-300 text-brand focus:ring-brand"
-                />
-                <div className="text-[11px] leading-relaxed">
-                   <span className="text-slate-700 font-bold">개인정보 수집 및 이용 동의 (필수)</span>
-                   <button onClick={() => setModal({ isOpen: true, title: '개인정보 수집 및 이용 동의', content: TERMS_TEXTS.privacy })} className="ml-2 text-slate-400 underline decoration-slate-200">보기</button>
-                </div>
-             </label>
-             <label className="flex items-start gap-3 cursor-pointer group">
-                <input 
-                  type="checkbox" 
-                  checked={consents.sensitive} 
-                  onChange={e => setConsents({...consents, sensitive: e.target.checked})}
-                  className="mt-1 w-4 h-4 rounded border-slate-300 text-brand focus:ring-brand"
-                />
-                <div className="text-[11px] leading-relaxed">
-                   <span className="text-slate-700 font-bold">민감정보(종교) 수집 및 이용 동의 (필수)</span>
-                   <button onClick={() => setModal({ isOpen: true, title: '민감정보 수집 및 이용 동의', content: TERMS_TEXTS.sensitive })} className="ml-2 text-slate-400 underline decoration-slate-200">보기</button>
-                </div>
-             </label>
-          </div>
-
           <button
             id="google-login-btn"
             onClick={handleGoogleLogin}
-            disabled={loading || !consents.general || !consents.sensitive}
+            disabled={loading}
             className="flex items-center justify-center gap-3 w-full py-4 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-sm transition-all hover:bg-slate-50 hover:shadow-lg disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-slate-50 shadow-sm"
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5" xmlns="http://www.w3.org/2000/svg">
@@ -164,7 +136,7 @@ function LoginContent() {
             />
             <button
               type="submit"
-              disabled={loading || !email || !password || !consents.general || !consents.sensitive}
+              disabled={loading || !email || !password}
               className="w-full py-4 rounded-2xl bg-slate-900 text-white font-extrabold text-sm hover:bg-black transition-all shadow-lg active:scale-95 disabled:opacity-40"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : '이메일로 로그인'}
@@ -179,11 +151,13 @@ function LoginContent() {
           </div>
         </div>
 
+
         {/* Notice */}
         <div className="mt-10 space-y-4">
           <p className="text-center text-[10px] text-slate-400 leading-relaxed font-medium">
             로그인 시 크리스천다이어리의{' '}
-            <button onClick={() => setModal({ isOpen: true, title: '이용약관', content: TERMS_TEXTS.tos })} className="text-slate-600 font-bold hover:underline">이용약관</button>에 동의하게 됩니다.
+            <button onClick={() => setModal({ isOpen: true, title: '이용약관', content: TERMS_TEXTS.tos })} className="text-slate-600 font-bold hover:underline">이용약관</button> 및{' '}
+            <button onClick={() => setModal({ isOpen: true, title: '개인정보 처리방침', content: TERMS_TEXTS.privacy })} className="text-slate-600 font-bold hover:underline">개인정보 처리방침</button>에 동의하게 됩니다.
           </p>
           <div className="pt-4 border-t border-slate-200">
             <p className="text-center text-[10px] text-slate-500 font-bold">

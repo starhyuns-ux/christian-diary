@@ -3,6 +3,7 @@ import { Outfit } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import Navbar from '@/components/layout/Navbar'
+import Footer from '@/components/layout/Footer'
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -57,6 +58,7 @@ export default function RootLayout({
           <main className="relative z-10">
             {children}
           </main>
+          <Footer />
           <DonationNotice />
           <InquiryFAB />
           <Toaster
