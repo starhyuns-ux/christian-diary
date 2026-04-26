@@ -13,6 +13,7 @@ import { Plus, MapPin, Calendar, Loader2, RefreshCw, Quote } from 'lucide-react'
 import Link from 'next/link'
 import EventCard from '@/components/events/EventCard'
 import { useLanguage } from '@/lib/contexts/LanguageContext'
+import ShareButton from '@/components/ui/ShareButton'
 
 const CalendarView = nextDynamic(() => import('@/components/calendar/CalendarView'), {
   ssr: false,
@@ -120,12 +121,20 @@ export default function HomePage() {
           </div>
           
           {dailyVerse && (
-            <div className="relative py-2 px-6 group">
+            <div className="relative py-2 px-6 group inline-block text-left sm:text-center">
               <Quote className="absolute -top-4 -left-2 w-10 h-10 text-brand/5 -rotate-12 transition-transform group-hover:rotate-0" />
               <h2 className="text-xl sm:text-2xl font-bold text-slate-800 leading-snug break-keep tracking-tight mb-3">
                 "{dailyVerse.text}"
               </h2>
-              <p className="text-brand font-extrabold text-[10px] tracking-widest uppercase">{dailyVerse.reference}</p>
+              <div className="flex items-center sm:justify-center gap-3">
+                <p className="text-brand font-extrabold text-[10px] tracking-widest uppercase">{dailyVerse.reference}</p>
+                <ShareButton 
+                  title={`${dailyVerse.text} - ${dailyVerse.reference}`}
+                  text="오늘의 말씀 묵상 나누기"
+                  url="/"
+                  className="p-1.5 rounded-full bg-slate-100 text-slate-500 hover:bg-brand/10 hover:text-brand transition-colors"
+                />
+              </div>
             </div>
           )}
         </div>
@@ -229,9 +238,16 @@ export default function HomePage() {
         <h2 className="font-modern text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3 tracking-tight break-keep">
           {t('hero_title')}
         </h2>
-        <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto font-medium leading-relaxed break-keep">
+        <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto font-medium leading-relaxed break-keep mb-8">
           {t('hero_desc')}
         </p>
+        <Link
+          href="/events/create"
+          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 text-white font-bold text-sm shadow-lg shadow-brand-500/30 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 ring-2 ring-brand-50 ring-offset-2"
+        >
+          <Plus className="w-4 h-4" />
+          우리 교회 모임/행사 무료로 등록하기
+        </Link>
       </div>
 
       {/* Event Cards */}
@@ -322,9 +338,10 @@ export default function HomePage() {
       {/* Mobile FAB */}
       <Link
         href="/events/create"
-        className="fixed bottom-6 right-6 sm:hidden w-14 h-14 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-2xl glow-brand z-50 hover:scale-110 transition-transform duration-200"
+        className="fixed bottom-6 right-6 sm:hidden flex items-center gap-2 px-5 h-14 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 shadow-2xl shadow-brand-500/40 z-50 hover:scale-105 transition-transform duration-200 border border-white/20"
       >
-        <Plus className="w-6 h-6 text-white" />
+        <Plus className="w-5 h-5 text-white" />
+        <span className="text-white font-bold text-sm">모임 등록</span>
       </Link>
     </div>
   )

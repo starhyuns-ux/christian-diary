@@ -6,6 +6,7 @@ import { ko } from 'date-fns/locale'
 import CategoryBadge from '@/components/ui/CategoryBadge'
 import { getGoogleCalendarUrl } from '@/lib/utils'
 import { useLanguage } from '@/lib/contexts/LanguageContext'
+import ShareButton from '@/components/ui/ShareButton'
 
 interface Props {
   event: Event
@@ -134,6 +135,14 @@ export default function EventCard({ event }: Props) {
             </div>
             
             <div className="flex items-center gap-2">
+              <ShareButton 
+                title={event.title}
+                text={event.description || ''}
+                url={`/events/${event.id}`}
+                className="p-1.5 rounded-lg bg-brand/5 text-brand hover:bg-brand/10 transition-colors"
+                iconClassName="w-3.5 h-3.5"
+                label={t('share') || "공유하기"}
+              />
               <a 
                 href={getGoogleCalendarUrl(event)}
                 target="_blank"
