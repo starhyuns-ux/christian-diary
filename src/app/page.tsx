@@ -252,22 +252,28 @@ export default function HomePage() {
 
       {/* Event Cards */}
       {/* Weekly Schedule Section */}
-      {!selectedDate && viewMode === 'calendar' && weeklyEvents.length > 0 && (
+      {!selectedDate && viewMode === 'calendar' && (
         <section className="mb-12 animate-fade-in">
           <div className="flex items-center gap-3 mb-6">
             <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2.5 font-modern">
               <div className="w-8 h-8 rounded-xl bg-brand/10 flex items-center justify-center">
                 <Calendar className="w-4 h-4 text-brand" />
               </div>
-              주간 일정
+              주간 행사
               <span className="text-sm font-bold text-slate-400 ml-1">{weeklyEvents.length}</span>
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {weeklyEvents.map(event => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
+          {weeklyEvents.length === 0 ? (
+            <div className="text-center py-10 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+              <p className="text-slate-400 font-medium text-sm">이번 주에는 예정된 행사가 없습니다</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {weeklyEvents.map(event => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          )}
         </section>
       )}
 
@@ -306,9 +312,9 @@ export default function HomePage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-64 skeleton rounded-2xl" />
+              <div key={i} className="min-w-[280px] sm:min-w-[320px] w-[320px] h-64 skeleton rounded-2xl shrink-0" />
             ))}
           </div>
         ) : (selectedDate ? filteredEvents : monthlyEvents).length === 0 ? (
@@ -327,9 +333,11 @@ export default function HomePage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="flex overflow-x-auto gap-4 pb-6 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 snap-x items-stretch">
             {(selectedDate ? filteredEvents : monthlyEvents).map(event => (
-              <EventCard key={event.id} event={event} />
+              <div key={event.id} className="min-w-[280px] sm:min-w-[320px] w-[320px] snap-start shrink-0">
+                <EventCard event={event} />
+              </div>
             ))}
           </div>
         )}
