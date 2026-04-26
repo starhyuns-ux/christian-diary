@@ -14,9 +14,10 @@ import { HOLIDAYS_2026 } from '@/lib/holidays'
 interface Props {
   events: Event[]
   onDateClick?: (date: string) => void
+  onDatesSet?: (date: Date) => void
 }
 
-export default function CalendarView({ events, onDateClick }: Props) {
+export default function CalendarView({ events, onDateClick, onDatesSet }: Props) {
   const router = useRouter()
 
   const userEvents = events.map(event => ({
@@ -76,6 +77,17 @@ export default function CalendarView({ events, onDateClick }: Props) {
         dateClick={info => {
           if (onDateClick) {
             onDateClick(info.dateStr)
+          }
+        }}
+        datesSet={info => {
+          if (onDatesSet) {
+            const current = new Date()
+            const viewStart = info.view.currentStart
+            if (viewStart.getMonth() === current.getMonth() && viewStart.getFullYear() === current.getFullYear()) {
+              onDatesSet(current)
+            } else {
+              onDatesSet(viewStart)
+            }
           }
         }}
         height="auto"

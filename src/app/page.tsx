@@ -34,6 +34,7 @@ export default function HomePage() {
   const [activeCategories, setActiveCategories] = useState<EventCategory[]>([])
   const [selectedRegion, setSelectedRegion] = useState('전국')
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [calendarDate, setCalendarDate] = useState<Date>(new Date())
   const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar')
   const eventListRef = useRef<HTMLDivElement>(null)
 
@@ -68,7 +69,7 @@ export default function HomePage() {
   }
 
   const { weeklyEvents, monthlyEvents, filteredEvents } = useMemo(() => {
-    const today = new Date()
+    const today = calendarDate
     
     const weekStart = startOfWeek(today, { weekStartsOn: 1 })
     const weekEnd = endOfWeek(today, { weekStartsOn: 1 })
@@ -82,15 +83,9 @@ export default function HomePage() {
       return new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
     })
 
-    const now = new Date()
     const weekly = sortedAll.filter(event => {
       const d = parseISO(event.start_at)
-      // 이번 주 범위 확인
-      const isInWeek = d >= weekStart && d <= weekEnd
-      // 시작 시간으로부터 1시간이 지났는지 확인 (현재 < 시작+1시간)
-      const isStillFresh = now.getTime() < (d.getTime() + 60 * 60 * 1000)
-      
-      return isInWeek && isStillFresh
+      return d >= weekStart && d <= weekEnd
     })
 
     const monthly = sortedAll.filter(event => {
@@ -103,7 +98,7 @@ export default function HomePage() {
       : sortedAll
 
     return { weeklyEvents: weekly, monthlyEvents: monthly, filteredEvents: filtered }
-  }, [events, selectedDate])
+  }, [events, selectedDate, calendarDate])
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -223,7 +218,11 @@ export default function HomePage() {
             {loading ? (
               <div className="h-[450px] skeleton rounded-2xl" />
             ) : (
-              <CalendarView events={events} onDateClick={handleDateClick} />
+              <CalendarView 
+                events={events} 
+                onDateClick={handleDateClick} 
+                onDatesSet={setCalendarDate}
+              />
             )}
           </div>
         </div>
