@@ -71,8 +71,8 @@ export default function HomePage() {
   const { weeklyEvents, monthlyEvents, filteredEvents } = useMemo(() => {
     const today = calendarDate
     
-    const weekStart = startOfWeek(today, { weekStartsOn: 1 })
-    const weekEnd = endOfWeek(today, { weekStartsOn: 1 })
+    const weekStart = startOfWeek(today, { weekStartsOn: 0 })
+    const weekEnd = endOfWeek(today, { weekStartsOn: 0 })
     
     const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1)
     const currentMonthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999)
@@ -83,9 +83,13 @@ export default function HomePage() {
       return new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
     })
 
+    const now = new Date()
     const weekly = sortedAll.filter(event => {
       const d = parseISO(event.start_at)
-      return d >= weekStart && d <= weekEnd
+      const isInWeek = d >= weekStart && d <= weekEnd
+      // 시작 시간으로부터 1시간이 지났는지 확인 (현재 < 시작+1시간)
+      const isStillFresh = now.getTime() < (d.getTime() + 60 * 60 * 1000)
+      return isInWeek && isStillFresh
     })
 
     const monthly = sortedAll.filter(event => {
