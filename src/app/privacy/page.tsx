@@ -9,7 +9,8 @@ export default function PrivacyPage() {
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-slate-500 hover:text-brand transition-colors font-bold text-sm">
             <ArrowLeft size={18} />
-            홈으로 돌아가기
+            <span className="hidden sm:inline">홈으로 돌아가기</span>
+            <span className="sm:hidden">홈으로</span>
           </Link>
           <div className="flex items-center gap-2">
             <ShieldCheck className="text-brand" size={24} />

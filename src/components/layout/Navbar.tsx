@@ -182,10 +182,10 @@ export default function Navbar() {
                 <Link
                   href="/login"
                   id="login-btn"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold hover:text-brand hover:border-brand/40 transition-all duration-200"
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold hover:text-brand hover:border-brand/40 transition-all duration-200"
                 >
                   <LogIn className="w-4 h-4" />
-                  {t('login')}
+                  <span className="hidden sm:inline">{t('login')}</span>
                 </Link>
               )}
 

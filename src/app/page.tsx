@@ -166,20 +166,20 @@ export default function HomePage() {
         </div>
 
         {/* Region + View Toggle */}
-        <div className="flex items-center gap-2">
-          <div className="relative">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <div className="relative flex-1 sm:flex-none min-w-[120px]">
             <MapPin className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
             <select
               value={selectedRegion}
               onChange={e => setSelectedRegion(e.target.value)}
-              className="pl-8 pr-8 py-2.5 rounded-xl bg-white border border-black/5 text-sm font-bold text-slate-700 appearance-none cursor-pointer hover:border-brand/30 transition-all focus:outline-none shadow-sm"
+              className="w-full pl-8 pr-8 py-2.5 rounded-xl bg-white border border-black/5 text-sm font-bold text-slate-700 appearance-none cursor-pointer hover:border-brand/30 transition-all focus:outline-none shadow-sm"
             >
               {REGIONS.map(r => (
                 <option key={r} value={r} className="bg-white text-slate-900">{r === '전국' ? t('all') : r}</option>
               ))}
             </select>
           </div>
-          <div className="flex bg-white rounded-xl border border-black/5 p-1 shadow-sm">
+          <div className="flex bg-white rounded-xl border border-black/5 p-1 shadow-sm shrink-0">
             <button
               onClick={() => setViewMode('calendar')}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
@@ -209,12 +209,14 @@ export default function HomePage() {
 
       {/* Calendar View */}
       {viewMode === 'calendar' && (
-        <div className="mb-8">
-          {loading ? (
-            <div className="h-[450px] skeleton rounded-2xl" />
-          ) : (
-            <CalendarView events={events} onDateClick={handleDateClick} />
-          )}
+        <div className="mb-8 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="min-w-[600px] sm:min-w-0 pb-4 sm:pb-0">
+            {loading ? (
+              <div className="h-[450px] skeleton rounded-2xl" />
+            ) : (
+              <CalendarView events={events} onDateClick={handleDateClick} />
+            )}
+          </div>
         </div>
       )}
 
