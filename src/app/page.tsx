@@ -217,18 +217,16 @@ export default function HomePage() {
 
       {/* Calendar View */}
       {viewMode === 'calendar' && (
-        <div className="mb-8 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-          <div className="min-w-[600px] sm:min-w-0 pb-4 sm:pb-0">
-            {loading ? (
-              <div className="h-[450px] skeleton rounded-2xl" />
-            ) : (
-              <CalendarView 
-                events={events} 
-                onDateClick={handleDateClick} 
-                onDatesSet={setCalendarDate}
-              />
-            )}
-          </div>
+        <div className="mb-8 w-full">
+          {loading ? (
+            <div className="h-[450px] skeleton rounded-[2rem]" />
+          ) : (
+            <CalendarView 
+              events={events} 
+              onDateClick={handleDateClick} 
+              onDatesSet={setCalendarDate}
+            />
+          )}
         </div>
       )}
 

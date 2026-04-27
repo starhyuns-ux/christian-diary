@@ -49,7 +49,7 @@ export default function CalendarView({ events, onDateClick, onDatesSet }: Props)
   const calendarEvents: EventSourceInput = [...userEvents, ...holidayEvents]
 
   return (
-    <div className="calendar-container glass p-3 sm:p-5 rounded-[2rem] border border-slate-200">
+    <div className="calendar-container glass p-2 sm:p-5 rounded-3xl sm:rounded-[2rem] border border-slate-200">
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
         initialView="dayGridMonth"
