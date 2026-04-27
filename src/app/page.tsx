@@ -347,7 +347,7 @@ export default function HomePage() {
       {/* Mobile FAB */}
       <Link
         href="/events/create"
-        className="fixed bottom-6 right-6 sm:hidden flex items-center gap-2 px-5 h-14 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 shadow-2xl shadow-brand-500/40 z-50 hover:scale-105 transition-transform duration-200 border border-white/20"
+        className="fixed bottom-24 right-6 sm:hidden flex items-center gap-2 px-5 h-14 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 shadow-2xl shadow-brand-500/40 z-50 hover:scale-105 transition-transform duration-200 border border-white/20"
       >
         <Plus className="w-5 h-5 text-white" />
         <span className="text-white font-bold text-sm">모임 등록</span>
