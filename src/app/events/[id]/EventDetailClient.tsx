@@ -112,7 +112,13 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
 
   const loadData = async () => {
     const updated = await fetchEventById(eventId)
-    if (updated) setEvent(updated)
+    if (updated) {
+      setEvent(prev => ({
+        ...updated,
+        start_at: prev.start_at,
+        end_at: prev.end_at
+      }))
+    }
   }
 
   const handleShare = () => {

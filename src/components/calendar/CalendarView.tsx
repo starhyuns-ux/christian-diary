@@ -68,10 +68,8 @@ export default function CalendarView({ events, onDateClick, onDatesSet }: Props)
         }}
         events={calendarEvents}
         eventClick={info => {
-          const originalId = info.event.extendedProps.original_id
-          const eventId = originalId || info.event.id
-          if (eventId) {
-            router.push(`/events/${eventId}`)
+          if (info.event.id) {
+            router.push(`/events/${info.event.id}`)
           }
         }}
         dateClick={info => {

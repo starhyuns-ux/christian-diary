@@ -96,5 +96,5 @@ export default async function EventDetailPage({ params }: Props) {
     }
   }
 
-  return <EventDetailClient initialEvent={adjustedEvent} eventId={params.id} />
+  return <EventDetailClient initialEvent={adjustedEvent} eventId={originalId} />
 }
