@@ -19,9 +19,10 @@ export default function EventCard({ event }: Props) {
   const startDate = parseISO(event.start_at)
   const isFull = event.max_participants != null && event.participant_count != null
     && event.participant_count >= event.max_participants
+  const actualId = event.original_id || event.id
 
   return (
-    <Link href={`/events/${event.id}`} className={`block group ${event.is_featured ? 'scale-105 z-10' : ''}`}>
+    <Link href={`/events/${actualId}`} className={`block group ${event.is_featured ? 'scale-105 z-10' : ''}`}>
       <div className={`glass rounded-2xl border p-0 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:shadow-2xl group-hover:glow-brand h-full flex flex-col overflow-hidden ${
         event.is_featured 
           ? 'border-amber-200 bg-amber-50/10 shadow-lg shadow-amber-500/5' 
@@ -138,7 +139,7 @@ export default function EventCard({ event }: Props) {
               <ShareButton 
                 title={event.title}
                 text={event.description || ''}
-                url={`/events/${event.id}`}
+                url={`/events/${actualId}`}
                 className="p-1.5 rounded-lg bg-brand/5 text-brand hover:bg-brand/10 transition-colors"
                 iconClassName="w-3.5 h-3.5"
                 label={t('share') || "공유하기"}
