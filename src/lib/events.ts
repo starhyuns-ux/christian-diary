@@ -152,14 +152,22 @@ export async function updateEvent(id: string, updates: Partial<Event>): Promise<
 }
 
 /**
- * 이벤트 참가자 목록 조회 (호스트용)
+ * 이벤트 참가자 목록 조회
+ * @param eventId 이벤트 ID
+ * @param includeContactInfo 호스트/관리자용 상세 정보(전화번호) 포함 여부
  */
-export async function fetchEventParticipants(eventId: string) {
+export async function fetchEventParticipants(eventId: string, includeContactInfo: boolean = false) {
   const { data, error } = await supabase
     .from('event_participants')
     .select(`
-      *,
-      user:users(id, name, avatar_url, church_name, phone)
+      id,
+      event_id,
+      user_id,
+      status,
+      registered_at,
+      guest_name,
+      ${includeContactInfo ? 'guest_phone,' : ''}
+      user:users(id, name, avatar_url, church_name ${includeContactInfo ? ', phone' : ''})
     `)
     .eq('event_id', eventId)
     .order('registered_at', { ascending: false })

@@ -91,12 +91,12 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
   const initUser = async () => {
     const { data: { user } } = await supabase.auth.getUser()
     
-    // 참가자 명단은 누구나 볼 수 있도록 (이름만)
-    const participantsData = await fetchEventParticipants(eventId)
-    setParticipants(participantsData || [])
+    let isHost = false
+    let isUserAdmin = false
 
     if (user) {
       setUserId(user.id)
+      isHost = user.id === initialEvent.host_id
       
       // 프로필에서 관리자 여부 확인
       const { data: profile } = await supabase
@@ -105,7 +105,7 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
         .eq('id', user.id)
         .single()
       
-      const isUserAdmin = !!profile?.is_admin
+      isUserAdmin = !!profile?.is_admin
       setIsAdmin(isUserAdmin)
 
       // 참가 여부 확인
@@ -120,6 +120,10 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
       const hasJoined = !!joinedData
       setIsJoined(hasJoined)
     }
+
+    // 참가자 명단은 역할에 따라 정보를 다르게 가져옴
+    const participantsData = await fetchEventParticipants(eventId, isHost || isUserAdmin)
+    setParticipants(participantsData || [])
   }
 
   const loadData = async () => {
@@ -131,8 +135,8 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
         end_at: prev.end_at
       }))
 
-      // 참가자 명단 갱신
-      const participantsData = await fetchEventParticipants(eventId)
+      // 참가자 명단 갱신 (권한에 따라)
+      const participantsData = await fetchEventParticipants(eventId, userId === updated.host_id || isAdmin)
       setParticipants(participantsData || [])
     }
   }
@@ -512,7 +516,7 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
                           <p className="text-sm text-slate-600 font-medium">
                             {(userId === event.host_id || isAdmin) 
                               ? (p.guest_phone || p.user?.phone || p.user?.church_name || '-')
-                              : (p.user?.church_name || '***-****-****')}
+                              : (p.user?.church_name || (p.guest_name ? '비회원' : '***-****-****'))}
                           </p>
                         </td>
                         <td className="py-4"><p className="text-xs text-slate-400 font-bold">{format(parseISO(p.registered_at), 'yyyy.MM.dd HH:mm')}</p></td>
