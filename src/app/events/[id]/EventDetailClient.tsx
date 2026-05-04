@@ -73,6 +73,7 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
   const [joining, setJoining] = useState(false)
   const [isJoined, setIsJoined] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [participants, setParticipants] = useState<any[]>([])
   const [showShareModal, setShowShareModal] = useState(false)
   const [showGuestModal, setShowGuestModal] = useState(false)
@@ -89,24 +90,35 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
 
   const initUser = async () => {
     const { data: { user } } = await supabase.auth.getUser()
+    
+    // 참가자 명단은 누구나 볼 수 있도록 (이름만)
+    const participantsData = await fetchEventParticipants(eventId)
+    setParticipants(participantsData || [])
+
     if (user) {
       setUserId(user.id)
       
-      // 호스트인 경우 참가자 명단 조회
-      if (user.id === initialEvent.host_id) {
-        const participantsData = await fetchEventParticipants(eventId)
-        setParticipants(participantsData || [])
-      }
+      // 프로필에서 관리자 여부 확인
+      const { data: profile } = await supabase
+        .from('users')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single()
+      
+      const isUserAdmin = !!profile?.is_admin
+      setIsAdmin(isUserAdmin)
 
       // 참가 여부 확인
-      const { data } = await supabase
+      const { data: joinedData } = await supabase
         .from('event_participants')
         .select('id')
         .eq('event_id', eventId)
         .eq('user_id', user.id)
         .eq('status', 'confirmed')
         .single()
-      setIsJoined(!!data)
+      
+      const hasJoined = !!joinedData
+      setIsJoined(hasJoined)
     }
   }
 
@@ -118,6 +130,10 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
         start_at: prev.start_at,
         end_at: prev.end_at
       }))
+
+      // 참가자 명단 갱신
+      const participantsData = await fetchEventParticipants(eventId)
+      setParticipants(participantsData || [])
     }
   }
 
@@ -228,8 +244,7 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
           <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1.5 transition-transform" />
           {t('list')} {t('events')}
         </button>
-
-        {userId === event.host_id && (
+        {userId && (userId === event.host_id || isAdmin) && (
           <div className="flex items-center gap-2">
             <Link 
               href={`/events/${eventId}/edit`}
@@ -312,10 +327,16 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
                   {event.host?.is_verified && <BadgeCheck className="w-5 h-5 text-brand fill-brand/10" />}
                   {event.denomination && <span className="text-slate-400 font-bold ml-2 text-sm">· {event.denomination}</span>}
                 </p>
-                {event.host?.phone && (
+                {event.host?.phone && (userId === event.host_id || isAdmin || isJoined) && (
                   <p className="text-slate-500 text-sm font-medium mt-1 flex items-center gap-1.5">
                     <Phone className="w-3.5 h-3.5 text-brand/60" />
                     {event.host.phone}
+                  </p>
+                )}
+                {event.host?.phone && !(userId === event.host_id || isAdmin || isJoined) && (
+                  <p className="text-slate-400 text-xs font-medium mt-1 flex items-center gap-1.5 italic">
+                    <Phone className="w-3.5 h-3.5 opacity-50" />
+                    연락처는 참가 신청 후 확인 가능합니다
                   </p>
                 )}
               </div>
@@ -455,8 +476,7 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
             </div>
           )}
         </div>
-
-        {userId === event.host_id && (
+        {participants.length > 0 && (
           <div className="lg:col-span-3 mt-12 bg-white rounded-3xl p-8 border border-slate-200 shadow-xl">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-extrabold text-slate-900 font-modern tracking-tight flex items-center gap-3">
@@ -488,7 +508,13 @@ export default function EventDetailClient({ initialEvent, eventId }: Props) {
                             </div>
                           </div>
                         </td>
-                        <td className="py-4"><p className="text-sm text-slate-600 font-medium">{p.guest_phone || p.user?.phone || p.user?.church_name || '-'}</p></td>
+                        <td className="py-4">
+                          <p className="text-sm text-slate-600 font-medium">
+                            {(userId === event.host_id || isAdmin) 
+                              ? (p.guest_phone || p.user?.phone || p.user?.church_name || '-')
+                              : (p.user?.church_name || '***-****-****')}
+                          </p>
+                        </td>
                         <td className="py-4"><p className="text-xs text-slate-400 font-bold">{format(parseISO(p.registered_at), 'yyyy.MM.dd HH:mm')}</p></td>
                       </tr>
                     ))}
